@@ -51,6 +51,22 @@ devablos-project-v2/
 │   │   ├── sockets/
 │   │   │   ├── chatSocket.js
 │   │   │   └── ...
+│   │   ├── views/
+│   │   │   ├── layout.jade
+│   │   │   ├── index.jade
+│   │   │   ├── error.jade
+│   │   │   └── ...
+│   │   ├── routes/
+│   │   │   ├── index.js
+│   │   │   ├── users.js
+│   │   │   └── ...
+│   │   ├── bin/
+│   │   │   ├── www
+│   │   │   └── ...
+│   │   ├── public/
+│   │   │   ├── stylesheets/
+│   │   │   │   ├── style.css
+│   │   │   │   └── ...
 │   │   ├── app.js
 │   │   ├── server.js
 │   │   └── ...
@@ -95,6 +111,18 @@ devablos-project-v2/
     - `chatService.js`: Service handling chat logic.
   - **`sockets/`**: WebSocket-related code.
     - `chatSocket.js`: Logic for handling chat WebSocket connections.
+  - **`views/`**: Template files for the server.
+    - `layout.jade`: Main layout template.
+    - `index.jade`: Index page template.
+    - `error.jade`: Error page template.
+  - **`routes/`**: Express route definitions.
+    - `index.js`: Route for home page.
+    - `users.js`: Route for user-related actions.
+  - **`bin/`**: Directory for executable files.
+    - `www`: Main entry point for the server.
+  - **`public/`**: Static files served by the server.
+    - `stylesheets/`
+      - `style.css`: Main stylesheet for the server.
   - `app.js`: Express app configuration.
   - `server.js`: Server entry point.
 

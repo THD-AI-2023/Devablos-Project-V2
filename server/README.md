@@ -25,6 +25,8 @@ server/
 │   │   └── ...
 │   ├── routes/
 │   │   ├── chatRoutes.js
+│   │   ├── index.js
+│   │   ├── users.js
 │   │   └── ...
 │   ├── services/
 │   │   ├── chatService.js
@@ -32,6 +34,18 @@ server/
 │   ├── sockets/
 │   │   ├── chatSocket.js
 │   │   └── ...
+│   ├── views/
+│   │   ├── layout.jade
+│   │   ├── index.jade
+│   │   ├── error.jade
+│   │   └── ...
+│   ├── bin/
+│   │   ├── www
+│   │   └── ...
+│   ├── public/
+│   │   ├── stylesheets/
+│   │   │   ├── style.css
+│   │   │   └── ...
 │   ├── app.js
 │   ├── server.js
 │   └── ...

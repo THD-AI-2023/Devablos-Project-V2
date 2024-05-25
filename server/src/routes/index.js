@@ -1,7 +1,15 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-/* GET home page. */
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     description: Welcome to the API
+ *     responses:
+ *       200:
+ *         description: Returns a welcome message
+ */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });

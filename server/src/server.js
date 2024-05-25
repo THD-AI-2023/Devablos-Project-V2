@@ -3,7 +3,7 @@ const app = require('./app');
 const socketIo = require('socket.io');
 
 // Get port from environment and store in Express
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
 
 // Create HTTP server

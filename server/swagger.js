@@ -29,6 +29,10 @@ const doc = {
       description: 'Endpoints related to OpenAI models',
     },
     {
+      name: 'OpenAI Batch',
+      description: 'Endpoints related to OpenAI batch processing',
+    },
+    {
       name: 'API',
       description: 'General API endpoints',
     },

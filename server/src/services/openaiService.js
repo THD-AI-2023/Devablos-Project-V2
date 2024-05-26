@@ -40,14 +40,48 @@ async function generateChatResponses(model, messages) {
   }
 }
 
-async function generateBatchResponses(model, prompts) {
+async function createBatch(inputFileId, endpoint) {
   try {
-    if (!model || !Array.isArray(prompts) || !prompts.length) {
-      throw new Error('Model and prompts array are required');
-    }
-    // TODO: Based on the documentation.
+    const response = await openai.batches.create({
+      input_file_id: inputFileId,
+      endpoint,
+      completion_window: '24h'
+    });
+    return response;
   } catch (error) {
-    console.error(`Error generating batch responses: ${error.message}`);
+    console.error(`Error creating batch: ${error.message}`);
+    throw error;
+  }
+}
+
+async function retrieveBatch(batchId) {
+  try {
+    const response = await openai.batches.retrieve(batchId);
+    return response;
+  } catch (error) {
+    console.error(`Error retrieving batch: ${error.message}`);
+    throw error;
+  }
+}
+
+async function cancelBatch(batchId) {
+  try {
+    const response = await openai.batches.cancel(batchId);
+    return response;
+  } catch (error) {
+    console.error(`Error canceling batch: ${error.message}`);
+    throw error;
+  }
+}
+
+async function listBatches(limit = 20, after = null) {
+  try {
+    const params = { limit };
+    if (after) params.after = after;
+    const response = await openai.batches.list(params);
+    return response;
+  } catch (error) {
+    console.error(`Error listing batches: ${error.message}`);
     throw error;
   }
 }
@@ -74,6 +108,9 @@ async function streamResponse(model, prompt, res) {
 module.exports = {
   generateSingleResponse,
   generateChatResponses,
-  generateBatchResponses,
+  createBatch,
+  retrieveBatch,
+  cancelBatch,
+  listBatches,
   streamResponse,
 };

@@ -400,6 +400,7 @@ async function streamResponseHandler(req, res, next) {
     if (!prompt) {
       return res.status(400).json({ error: 'Prompt is required' });
     }
+    res.setHeader('Content-Type', 'text/event-stream');
     await streamResponse(model, prompt, res);
   } catch (error) {
     return next(error);

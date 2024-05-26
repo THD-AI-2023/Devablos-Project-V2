@@ -100,16 +100,22 @@ async function streamResponse(model, prompt, res) {
     if (!model || !prompt) {
       throw new Error('Model and prompt are required');
     }
-    const response = await openai.createCompletion({
-      model,
-      prompt,
-      max_tokens: 150,
+    const response = await openai.chat.completions.create({
+      model: model,
+      messages: [{ role: 'user', content: prompt }],
       stream: true,
-    }, { responseType: 'stream' });
+    });
 
-    response.data.pipe(res);
+    for await (const chunk of response) {
+      if (chunk.choices[0].delta.content) {
+        res.write(chunk.choices[0].delta.content);
+      }
+    }
+    res.end();
   } catch (error) {
     console.error(`Error streaming response: ${error.message}`);
+    res.write(`Error: ${error.message}`);
+    res.end();
     throw error;
   }
 }

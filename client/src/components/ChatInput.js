@@ -1,12 +1,16 @@
+// src/components/ChatInput.js
 import React, { useState } from 'react';
 
-const ChatInput = ({ sendMessage }) => {
+const ChatInput = ({ addMessage }) => {
   const [input, setInput] = useState('');
 
   const handleSend = () => {
     if (input.trim()) {
-      sendMessage(input.trim());
+      addMessage(input.trim());
       setInput('');
+      setTimeout(() => {
+        addMessage('How can I help you today?', true); // Bot response after a delay
+      }, 500);
     }
   };
 

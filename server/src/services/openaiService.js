@@ -24,6 +24,22 @@ async function generateSingleResponse(model, prompt) {
   }
 }
 
+async function generateChatResponses(model, messages) {
+  try {
+    if (!model || !Array.isArray(messages) || !messages.length) {
+      throw new Error('Model and messages array are required');
+    }
+    const response = await openai.chat.completions.create({
+      model: model,
+      messages: messages,
+    });
+    return response;
+  } catch (error) {
+    console.error(`Error generating chat responses: ${error.message}`);
+    throw error;
+  }
+}
+
 async function generateBatchResponses(model, prompts) {
   try {
     if (!model || !Array.isArray(prompts) || !prompts.length) {
@@ -57,6 +73,7 @@ async function streamResponse(model, prompt, res) {
 
 module.exports = {
   generateSingleResponse,
+  generateChatResponses,
   generateBatchResponses,
   streamResponse,
 };

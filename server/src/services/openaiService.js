@@ -6,6 +6,15 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 })
 
+async function retrieveModels() {
+  try {
+    const response = await openai.models.list();
+    return response;
+  } catch (error) {
+    console.error(`Error retrieving models: ${error.message}`);
+    throw error;
+  }
+}
 
 async function generateSingleResponse(model, prompt) {
   try {
@@ -106,6 +115,7 @@ async function streamResponse(model, prompt, res) {
 }
 
 module.exports = {
+  retrieveModels,
   generateSingleResponse,
   generateChatResponses,
   createBatch,

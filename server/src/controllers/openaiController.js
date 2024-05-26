@@ -1,4 +1,5 @@
 const {
+  retrieveModels,
   generateSingleResponse,
   generateChatResponses,
   createBatch,
@@ -8,6 +9,46 @@ const {
   streamResponse
 } = require('../services/openaiService');
 const defaultModel = 'gpt-4o';
+
+async function retrieveModelsHandler(req, res, next) {
+  /*
+    #swagger.tags = ['OpenAI']
+    #swagger.summary = 'Retrieve all models'
+    #swagger.description = 'This endpoint retrieves all models.'
+    #swagger.responses[200] = {
+      description: 'Models retrieved successfully',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              object: { type: 'string' },
+              data: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'string' },
+                    object: { type: 'string' },
+                    created: { type: 'integer' },
+                    owned_by: { type: 'string' }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[500] = { description: 'Server error' }
+  */
+  try {
+    const response = await retrieveModels();
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+}
 
 async function singleResponseHandler(req, res, next) {
   /*
@@ -291,17 +332,17 @@ async function listBatchesHandler(req, res, next) {
             properties: {
               object: { type: 'string' },
               data: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                id: { type: 'string' },
-                object: { type: 'string' },
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'string' },
+                    object: { type: 'string' },
                     endpoint: { type: 'string' },
                     status: { type: 'string' },
                     request_counts: {
-                    type: 'object',
-                    properties: {
+                      type: 'object',
+                      properties: {
                         total: { type: 'integer' },
                         completed: { type: 'integer' },
                         failed: { type: 'integer' }
@@ -366,6 +407,7 @@ async function streamResponseHandler(req, res, next) {
 }
 
 module.exports = {
+  retrieveModelsHandler,
   singleResponseHandler,
   chatResponseHandler,
   createBatchHandler,

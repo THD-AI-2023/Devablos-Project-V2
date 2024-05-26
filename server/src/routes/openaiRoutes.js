@@ -1,5 +1,6 @@
 const express = require('express');
 const {
+    retrieveModelsHandler,
     singleResponseHandler,
     chatResponseHandler,
     createBatchHandler,
@@ -11,11 +12,11 @@ const {
 
 const router = express.Router();
 
+router.get('/', retrieveModelsHandler);
+
 router.post('/single', singleResponseHandler);
 
 router.post('/chat', chatResponseHandler);
-
-router.post('/batch', batchResponseHandler);
 
 router.post('/streaming', streamResponseHandler);
 

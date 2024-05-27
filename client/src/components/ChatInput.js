@@ -1,4 +1,3 @@
-// src/components/ChatInput.js
 import React, { useState } from 'react';
 
 const ChatInput = ({ addMessage }) => {
@@ -8,9 +7,6 @@ const ChatInput = ({ addMessage }) => {
     if (input.trim()) {
       addMessage(input.trim());
       setInput('');
-      setTimeout(() => {
-        addMessage('How can I help you today?', true); // Bot response after a delay
-      }, 500);
     }
   };
 

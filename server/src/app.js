@@ -5,12 +5,22 @@ const logger = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger_output.json');
 const createError = require('http-errors');
+const cors = require('cors');
+const dotenv = require("dotenv");
+dotenv.config();
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const openaiRouter = require('./routes/openaiRoutes');
 
 const app = express();
+
+// Configure CORS
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

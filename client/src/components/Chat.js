@@ -8,7 +8,8 @@ const Chat = () => {
 
   const addMessage = async (message, isBot = false) => {
     if (message) {
-      const newMessages = [...messages, { role: isBot ? 'assistant' : 'user', content: message }];
+      const newMessage = { role: isBot ? 'assistant' : 'user', content: message };
+      const newMessages = [...messages, newMessage];
       setMessages(newMessages);
 
       if (!isBot) {
@@ -22,7 +23,8 @@ const Chat = () => {
           });
           const data = await response.json();
           if (data && data.choices && data.choices[0].message) {
-            addMessage(data.choices[0].message.content, true);
+            const botMessage = data.choices[0].message.content;
+            setMessages((prevMessages) => [...prevMessages, { role: 'assistant', content: botMessage }]);
           }
         } catch (error) {
           console.error('Error fetching response:', error);

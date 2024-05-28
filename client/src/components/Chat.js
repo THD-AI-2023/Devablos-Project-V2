@@ -4,7 +4,9 @@ import Message from './Message';
 import './Chat.css';
 
 const Chat = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    { role: 'system', content: 'You are Devabot ✨, a funny helpful assistant.' }
+  ]);
 
   const addMessage = async (message, isBot = false) => {
     if (message) {
@@ -37,7 +39,7 @@ const Chat = () => {
     <div className="chat-container">
       <div className="messages">
         {messages.map((msg, index) => (
-          <Message key={index} text={msg.content} isBot={msg.role === 'assistant'} />
+          msg.role !== 'system' && <Message key={index} text={msg.content} isBot={msg.role === 'assistant'} />
         ))}
       </div>
       <ChatInput addMessage={addMessage} />

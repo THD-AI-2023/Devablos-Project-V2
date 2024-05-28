@@ -1,0 +1,8 @@
+# Project Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment Variables
+.env
+swagger_output.json

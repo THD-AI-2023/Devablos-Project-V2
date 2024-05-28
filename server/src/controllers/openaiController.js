@@ -62,7 +62,7 @@ async function singleResponseHandler(req, res, next) {
           schema: {
             type: 'object',
             properties: {
-              model: { type: 'string', example: 'gpt-3.5-turbo' },
+              model: { type: 'string', example: 'gpt-3.5-turbo-instruct' },
               prompt: { type: 'string', example: 'Your prompt here' }
             }
           }

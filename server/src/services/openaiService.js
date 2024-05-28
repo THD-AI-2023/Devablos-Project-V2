@@ -21,10 +21,9 @@ async function generateSingleResponse(model, prompt) {
     if (!model || !prompt) {
       throw new Error('Model and prompt are required');
     }
-    const response = await openai.chat.completions.create({
+    const response = await openai.completions.create({
       model: model,
-      messages: [{ role: 'system', content: "You are Devabot ✨, a funny helpful assistant." }, 
-      { role: 'user', content: prompt }],
+      prompt: prompt,
     });
     return response;
   } catch (error) {

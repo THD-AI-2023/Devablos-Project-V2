@@ -6,3 +6,7 @@ yarn.lock
 # Environment Variables
 .env
 swagger_output.json
+
+# Security
+*.cert
+*.key

@@ -1,20 +1,37 @@
-const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const app = require('./app');
 
-// Get port from environment and store in Express
-const port = normalizePort(process.env.PORT || '5000');
-app.set('port', port);
+// Read SSL key and certificate
+const privateKey = fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8');
+const certificate = fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8');
+const credentials = { key: privateKey, cert: certificate };
 
-// Create HTTP server
-const server = http.createServer(app);
+// Create HTTPS server
+const server = https.createServer(credentials, app);
 
 // Normalize a port into a number, string, or false
-function normalizePort(val) {
+const normalizePort = val => {
   const port = parseInt(val, 10);
   if (isNaN(port)) return val;
   if (port >= 0) return port;
   return false;
-}
+};
+
+const port = normalizePort(process.env.PORT || '5000');
+app.set('port', port);
+
+// Error handler for HTTP server
+const onError = error => {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+};
+
+// Event listener for HTTP server "error" event
+function onError(error) {
+  if (error.syscall !== 'listen') throw error;
+};
 
 // Event listener for HTTP server "error" event
 function onError(error) {
@@ -32,10 +49,10 @@ function onError(error) {
     default:
       throw error;
   }
-}
+};
 
 // Event listener for HTTP server "listening" event
-function onListening() {
+const onListening = () => {
   const addr = server.address();
   const bind = typeof addr === 'string' ? 'Pipe ' + addr : 'Port ' + addr.port;
   console.log('Listening on ' + bind);

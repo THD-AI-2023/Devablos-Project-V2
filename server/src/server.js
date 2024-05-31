@@ -1,4 +1,5 @@
 const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const app = require('./app');
 
@@ -8,7 +9,7 @@ const certificate = fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
 // Create HTTPS server
-const server = https.createServer(credentials, app);
+const httpsServer = https.createServer(credentials, app);
 
 // Normalize a port into a number, string, or false
 const normalizePort = val => {
@@ -26,16 +27,6 @@ const onError = error => {
   if (error.syscall !== 'listen') {
     throw error;
   }
-};
-
-// Event listener for HTTP server "error" event
-function onError(error) {
-  if (error.syscall !== 'listen') throw error;
-};
-
-// Event listener for HTTP server "error" event
-function onError(error) {
-  if (error.syscall !== 'listen') throw error;
   const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
   switch (error.code) {
     case 'EACCES':
@@ -53,12 +44,23 @@ function onError(error) {
 
 // Event listener for HTTP server "listening" event
 const onListening = () => {
-  const addr = server.address();
+  const addr = httpsServer.address();
   const bind = typeof addr === 'string' ? 'Pipe ' + addr : 'Port ' + addr.port;
   console.log('Listening on ' + bind);
-}
+};
 
 // Listen on provided port, on all network interfaces
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+httpsServer.listen(port);
+httpsServer.on('error', onError);
+httpsServer.on('listening', onListening);
+
+// HTTP server for redirection
+const httpPort = 80;
+const httpServer = http.createServer((req, res) => {
+  res.writeHead(301, { "Location": `https://${req.headers['host']}${req.url}` });
+  res.end();
+});
+
+httpServer.listen(httpPort, () => {
+  console.log(`HTTP Server listening on port ${httpPort} and redirecting to HTTPS`);
+});

@@ -9,4 +9,6 @@ swagger_output.json
 
 # Security
 *.cert
+*.crt
 *.key
+*.pem

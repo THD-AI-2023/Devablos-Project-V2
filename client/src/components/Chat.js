@@ -17,10 +17,15 @@ const Chat = () => {
 
   useEffect(() => {
     if (lastMessage !== null) {
-      const { data } = lastMessage;
-      const parsedData = JSON.parse(data);
-      const newMessage = { role: 'assistant', content: parsedData.message };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      try {
+        const parsedData = JSON.parse(lastMessage.data);
+        if (parsedData.message) {
+          const newMessage = { role: 'assistant', content: parsedData.message };
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
     }
   }, [lastMessage]);
 

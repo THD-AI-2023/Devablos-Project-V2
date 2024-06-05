@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 
-const WS_URL = `wss://localhost:5002`;
+const WS_URL = `ws://localhost:5001`;
 
 console.log('WebSocket URL:', WS_URL);
 

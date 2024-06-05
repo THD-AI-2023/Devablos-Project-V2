@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node swagger && node ./src/bin/www"
+    "start": "node swagger && node ./src/bin/www",
+    "start-ws": "node ./src/sockets/wsServer.js",
+    "start-wss": "node ./src/sockets/wssServer.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

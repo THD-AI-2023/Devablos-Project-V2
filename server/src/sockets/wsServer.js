@@ -18,7 +18,11 @@ server.on('connection', (ws) => {
 
   ws.on('message', (message) => {
     console.log(`Received message from ${id}: ${message}`);
-    // Handle incoming messages here
+    clients.forEach((clientWs, clientId) => {
+      if (clientId !== id) {
+        clientWs.send(JSON.stringify({ message }));
+      }
+    });
   });
 
   ws.on('close', () => {

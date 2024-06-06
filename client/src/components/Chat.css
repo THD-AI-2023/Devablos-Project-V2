@@ -3,13 +3,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 80vh;
-  width: 400px;
+  height: 86.9vh;
+  width: 98vw;
   margin: auto;
-  border: 1px solid #ccc;
-  border-radius: 5px;
   padding: 10px;
-  background-color: #f9f9f9;
+  background-color: #00214d;
 }
 
 .messages {
@@ -20,20 +18,28 @@
 
 .chat-input {
   display: flex;
+  width: 48vw;
+  max-height: 10vh;
+  align-self: center;
 }
 
 .chat-input input {
   flex-grow: 1;
   padding: 10px;
-  border: 1px solid #ccc;
+  background-color: #010710;
+  border: 1px solid #001C42;
+  color: white;
+  width: auto;
+  max-height: 20vh;
+  overflow-y: auto;
   border-radius: 5px;
 }
 
 .chat-input button {
   padding: 10px;
   border: none;
-  background-color: #007bff;
-  color: white;
+  background-color: white;
+  color: #010710;
   cursor: pointer;
   border-radius: 5px;
   margin-left: 5px;

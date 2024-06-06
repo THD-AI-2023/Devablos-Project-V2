@@ -5,17 +5,21 @@
   border-radius: 5px;
   display: flex;
   align-items: center;
-  max-width: 80%;
+  max-width: 80vw;
 }
 
 .user {
-  background-color: #007bff;
+  background-color: #00214d;
   color: white;
-  align-self: flex-end;
+  align-self: right;
+  width: 48vw;
+  max-width: 48vw;
 }
 
 .bot {
-  background-color: #e0e0e0;
-  color: black;
+  background-color: #020f20;
+  color: white;
   align-self: flex-start;
+  width: 48vw;
+  max-width: 48vw;
 }

@@ -1,3 +1,4 @@
+const { start } = require('repl');
 const {
   retrieveModels,
   generateSingleResponse,
@@ -6,7 +7,8 @@ const {
   retrieveBatch,
   cancelBatch,
   listBatches,
-  streamResponse
+  streamResponse,
+  streamResponseWs
 } = require('../services/openaiService');
 const defaultModel = 'gpt-4o';
 
@@ -416,4 +418,5 @@ module.exports = {
   cancelBatchHandler,
   listBatchesHandler,
   streamResponseHandler,
+  streamResponseWs,
 };

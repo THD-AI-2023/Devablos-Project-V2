@@ -6,7 +6,7 @@ const {
   retrieveBatchHandler,
   cancelBatchHandler,
   listBatchesHandler,
-  streamResponseHandler,
+  streamResponseWs,
 } = require('../controllers/openaiController');
 
 async function handleWebSocket(ws, req, msg) {
@@ -26,13 +26,13 @@ async function handleWebSocket(ws, req, msg) {
   try {
     const parsedMsg = JSON.parse(msg);
     switch (parsedMsg.action) {
-      case 'retrieveModels': // {"action":"retrieveModels","data":{}}
+      case 'retrieveModels':
         await retrieveModelsHandler({ body: parsedMsg.data }, res, () => {});
         break;
-      case 'singleResponse': // {"action": "singleResponse", "data": {"model": "gpt-3.5-turbo-instruct", "prompt": "What is the capital of the United States?", "max_tokens": 64}}
+      case 'singleResponse':
         await singleResponseHandler({ body: parsedMsg.data }, res, () => {});
         break;
-      case 'chatResponse': // {"action":"chatResponse","data":{"model":"gpt-3.5-turbo","messages":[{"role":"system","content":"You are Devabot ✨, a funny helpful assistant."},{"role":"user","content":"Hello there!"}]}}
+      case 'chatResponse':
         await chatResponseHandler({ body: parsedMsg.data }, res, () => {});
         break;
       case 'createBatch':
@@ -47,8 +47,9 @@ async function handleWebSocket(ws, req, msg) {
       case 'listBatches':
         await listBatchesHandler({ query: parsedMsg.data }, res, () => {});
         break;
-      case 'streamResponse': // {"action":"streamResponse","data":{"model":"gpt-3.5-turbo","prompt":"What is the capital of the United States?"}}
-        await streamResponseHandler({ body: parsedMsg.data }, res, () => {});
+      case 'streamResponse':
+        const { model, prompt } = parsedMsg.data;
+        await streamResponseWs(model, prompt, ws);
         break;
       default:
         ws.send(JSON.stringify({ error: 'Unknown action' }));

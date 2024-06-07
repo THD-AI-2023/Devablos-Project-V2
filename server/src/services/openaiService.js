@@ -1,5 +1,7 @@
 const { OpenAI } = require('openai');
+const WebSocket = require('ws');
 const dotenv = require("dotenv");
+
 dotenv.config();
 
 const openai = new OpenAI({
@@ -96,18 +98,15 @@ async function listBatches(limit = 20, after = null) {
 
 async function streamResponse(model, prompt, res) {
   try {
-    if (!model || !prompt) {
-      throw new Error('Model and prompt are required');
-    }
     const response = await openai.chat.completions.create({
       model: model,
       messages: [{ role: 'user', content: prompt }],
       stream: true,
     });
 
-    for await (const chunk of response) {
-      if (chunk.choices[0].delta.content) {
-        res.write(chunk.choices[0].delta.content);
+    for await (const part of response) {
+      if (part.choices[0].delta.content) {
+        res.write(part.choices[0].delta.content);
       }
     }
     res.end();
@@ -116,6 +115,30 @@ async function streamResponse(model, prompt, res) {
     res.write(`Error: ${error.message}`);
     res.end();
     throw error;
+  }
+}
+
+async function streamResponseWs(model, prompt, ws) {
+  try {
+    const response = await openai.chat.completions.create({
+      model: model,
+      messages: [{ role: 'user', content: prompt }],
+      stream: true,
+    });
+
+    for await (const part of response) {
+      if (part.choices[0].delta.content) {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            type: 'content',
+            data: part.choices[0].delta.content,
+          }));
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error streaming response: ${error.message}`);
+    ws.send(JSON.stringify({ error: error.message }));
   }
 }
 
@@ -128,4 +151,5 @@ module.exports = {
   cancelBatch,
   listBatches,
   streamResponse,
+  streamResponseWs,
 };

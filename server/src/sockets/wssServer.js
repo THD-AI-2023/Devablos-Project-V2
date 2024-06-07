@@ -3,6 +3,7 @@ const https = require('https');
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 const dotenv = require('dotenv');
+const openaiWsRoutes = require('../routes/openaiWsRoutes');
 
 dotenv.config();
 
@@ -20,20 +21,19 @@ const wss = new WebSocket.Server({ server: httpsServer });
 
 const clients = new Map();
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
   const id = uuidv4();
   clients.set(id, ws);
 
   console.log(`Client connected: ${id}`);
   ws.send(JSON.stringify({ message: 'Welcome!', id }));
 
-  ws.on('message', (message) => {
-    console.log(`Received message from ${id}: ${message}`);
-    clients.forEach((clientWs, clientId) => {
-      if (clientId !== id) {
-        clientWs.send(JSON.stringify({ message }));
-      }
-    });
+  ws.on('message', async (message) => {
+    try {
+      await openaiWsRoutes.handleWebSocket(ws, req, message);
+    } catch (error) {
+      console.error(`Error handling message from ${id}:`, error);
+    }
   });
 
   ws.on('close', () => {

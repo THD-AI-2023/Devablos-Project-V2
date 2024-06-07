@@ -26,13 +26,13 @@ async function handleWebSocket(ws, req, msg) {
   try {
     const parsedMsg = JSON.parse(msg);
     switch (parsedMsg.action) {
-      case 'retrieveModels':
+      case 'retrieveModels': // {"action":"retrieveModels","data":{}}
         await retrieveModelsHandler({ body: parsedMsg.data }, res, () => {});
         break;
-      case 'singleResponse':
+      case 'singleResponse': // {"action": "singleResponse", "data": {"model": "gpt-3.5-turbo-instruct", "prompt": "What is the capital of the United States?", "max_tokens": 64}}
         await singleResponseHandler({ body: parsedMsg.data }, res, () => {});
         break;
-      case 'chatResponse':
+      case 'chatResponse': // {"action":"chatResponse","data":{"model":"gpt-3.5-turbo","messages":[{"role":"system","content":"You are Devabot ✨, a funny helpful assistant."},{"role":"user","content":"Hello there!"}]}}
         await chatResponseHandler({ body: parsedMsg.data }, res, () => {});
         break;
       case 'createBatch':
@@ -47,7 +47,7 @@ async function handleWebSocket(ws, req, msg) {
       case 'listBatches':
         await listBatchesHandler({ query: parsedMsg.data }, res, () => {});
         break;
-      case 'streamResponse':
+      case 'streamResponse': // {"action":"streamResponse","data":{"model":"gpt-3.5-turbo","prompt":"What is the capital of the United States?"}}
         await streamResponseHandler({ body: parsedMsg.data }, res, () => {});
         break;
       default:

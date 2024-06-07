@@ -52,6 +52,10 @@ const doc = {
       name: 'Security',
       description: 'Endpoints related to security and authentication',
     },
+    {
+      name: 'GPT Assistant Chat',
+      description: 'Endpoints related to assistant chat functionality'
+    }
   ],
   securityDefinitions: {
     JWT: {

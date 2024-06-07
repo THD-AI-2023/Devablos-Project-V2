@@ -13,6 +13,7 @@ dotenv.config();
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const openaiRouter = require('./routes/openaiRoutes');
+const assistantRouter = require('./routes/assistantRoutes');
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use('/admin', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/openai', openaiRouter);
+app.use('/assistant', assistantRouter);
 
 // TODO: Add future endpoints for tasks like menu creation and web search
 

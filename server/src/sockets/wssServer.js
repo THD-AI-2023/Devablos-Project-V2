@@ -3,6 +3,7 @@ const https = require('https');
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 const dotenv = require('dotenv');
+const clients = require('../utils/connection');
 const openaiWsRoutes = require('../routes/openaiWsRoutes');
 
 dotenv.config();
@@ -18,8 +19,6 @@ const serverOptions = {
 
 const httpsServer = https.createServer(serverOptions);
 const wss = new WebSocket.Server({ server: httpsServer });
-
-const clients = new Map();
 
 wss.on('connection', (ws, req) => {
   const id = uuidv4();

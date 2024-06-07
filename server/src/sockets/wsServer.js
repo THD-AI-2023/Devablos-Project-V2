@@ -1,12 +1,12 @@
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 const dotenv = require('dotenv');
+const clients = require('../utils/connection');
 const openaiWsRoutes = require('../routes/openaiWsRoutes');
 
 dotenv.config();
 
 const WS_PORT = process.env.WS_PORT || 5001;
-const clients = new Map();
 
 const server = new WebSocket.Server({ port: WS_PORT });
 

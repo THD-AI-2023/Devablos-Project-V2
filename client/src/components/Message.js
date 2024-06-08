@@ -1,4 +1,3 @@
-// src/components/Message.js
 import React from 'react';
 import './Message.css';
 

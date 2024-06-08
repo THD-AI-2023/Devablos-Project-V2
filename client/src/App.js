@@ -1,30 +1,42 @@
-import React from 'react';
-import Chat from './components/Chat';
-import './App.css';
+import React, { useState } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import Chat from './components/Chat';
+import Navbar from './components/Navbar';
+import './App.css';
 
 const WS_URL = process.env.REACT_APP_WS_URL || `ws://${window.location.hostname}/ws`;
 
-console.log('WebSocket URL:', WS_URL);
-
 function App() {
-  const { readyState } = useWebSocket(WS_URL, {
-    onOpen: () => {
-      console.log('WebSocket connection established.');
-    },
-    onError: (error) => {
-      console.error('WebSocket error:', error);
-    }
+  const [socketUrl, setSocketUrl] = useState(WS_URL);
+  const { sendMessage, lastMessage, readyState, reconnect } = useWebSocket(socketUrl, {
+    shouldReconnect: () => true,
+    onOpen: () => console.log('WebSocket connection established.'),
+    onError: (error) => console.error('WebSocket error:', error),
+    onMessage: (message) => console.log('WebSocket message received:', message)
   });
 
-  console.log('WebSocket state:', ReadyState[readyState]);
+  const clearHistory = () => {
+    localStorage.removeItem('chatHistory');
+    window.location.reload();
+  };
+
+  const getStatus = () => {
+    switch (readyState) {
+      case ReadyState.CONNECTING:
+        return '🔄 Connecting';
+      case ReadyState.OPEN:
+        return '🟢 Connected';
+      case ReadyState.CLOSING:
+      case ReadyState.CLOSED:
+      default:
+        return '🔴 Fallback to HTTPS';
+    }
+  };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Chat with our Bot</h1>
-      </header>
-      <Chat />
+      <Navbar status={getStatus()} onReconnect={reconnect} onClearHistory={clearHistory} />
+      <Chat sendMessage={sendMessage} lastMessage={lastMessage} />
     </div>
   );
 }

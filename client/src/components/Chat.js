@@ -2,26 +2,26 @@ import React, { useState, useEffect } from 'react';
 import ChatInput from './ChatInput';
 import Message from './Message';
 import './Chat.css';
-import useWebSocket from 'react-use-websocket';
 
-const WS_URL = process.env.REACT_APP_WS_URL || `ws://${window.location.hostname}/ws`;
-
-const Chat = () => {
-  const [messages, setMessages] = useState([
-    { role: 'system', content: 'You are Devabot ✨, a funny helpful assistant.' }
-  ]);
-  const { sendMessage, lastMessage } = useWebSocket(WS_URL, {
-    onOpen: () => console.log('WebSocket connection established.'),
-    onError: (error) => console.error('WebSocket error:', error),
+const Chat = ({ sendMessage, lastMessage }) => {
+  const sessionId = 'user-session-id'; // Ideally, generate or retrieve a unique session ID for each user
+  const [messages, setMessages] = useState(() => {
+    const savedMessages = localStorage.getItem('chatHistory');
+    return savedMessages ? JSON.parse(savedMessages) : [{ role: 'system', content: 'You are Devabot ✨, a funny helpful assistant.' }];
   });
 
   useEffect(() => {
     if (lastMessage !== null) {
       try {
         const parsedData = JSON.parse(lastMessage.data);
-        if (parsedData.message) {
-          const newMessage = { role: 'assistant', content: parsedData.message };
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        console.log('Parsed data from WebSocket:', parsedData);
+        if (parsedData.choices && parsedData.choices.length > 0) {
+          const newMessage = { role: 'assistant', content: parsedData.choices[0].message.content };
+          setMessages((prevMessages) => {
+            const updatedMessages = [...prevMessages, newMessage];
+            localStorage.setItem('chatHistory', JSON.stringify(updatedMessages));
+            return updatedMessages;
+          });
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -32,8 +32,18 @@ const Chat = () => {
   const addMessage = (message) => {
     if (message) {
       const newMessage = { role: 'user', content: message };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      sendMessage(JSON.stringify({ message }));
+      const updatedMessages = [...messages, newMessage];
+      setMessages(updatedMessages);
+      localStorage.setItem('chatHistory', JSON.stringify(updatedMessages));
+      console.log('Sending message via WebSocket:', updatedMessages);
+      sendMessage(JSON.stringify({
+        action: 'chatResponse',
+        data: {
+          model: 'gpt-3.5-turbo',
+          messages: updatedMessages,
+          sessionId: sessionId,
+        },
+      }));
     }
   };
 

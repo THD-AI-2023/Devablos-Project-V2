@@ -2,12 +2,9 @@ const {
   retrieveModelsHandler,
   singleResponseHandler,
   chatResponseHandler,
-  createBatchHandler,
-  retrieveBatchHandler,
-  cancelBatchHandler,
-  listBatchesHandler,
   streamResponseWs,
 } = require('../controllers/openaiController');
+const clients = require('../utils/connection');
 
 async function handleWebSocket(ws, req, msg) {
   const res = {
@@ -25,6 +22,18 @@ async function handleWebSocket(ws, req, msg) {
 
   try {
     const parsedMsg = JSON.parse(msg);
+    const sessionId = parsedMsg.data.sessionId;
+
+    if (!clients.has(sessionId)) {
+      console.error('Session not found:', sessionId);
+      ws.send(JSON.stringify({ error: 'Session not found' }));
+      return;
+    }
+
+    let { chatHistory } = clients.get(sessionId);
+
+    console.log(`Handling WebSocket action: ${parsedMsg.action}`);
+
     switch (parsedMsg.action) {
       case 'retrieveModels':
         await retrieveModelsHandler({ body: parsedMsg.data }, res, () => {});
@@ -33,22 +42,14 @@ async function handleWebSocket(ws, req, msg) {
         await singleResponseHandler({ body: parsedMsg.data }, res, () => {});
         break;
       case 'chatResponse':
+        chatHistory.push(...parsedMsg.data.messages);
+        clients.set(sessionId, { ws, chatHistory });
         await chatResponseHandler({ body: parsedMsg.data }, res, () => {});
-        break;
-      case 'createBatch':
-        await createBatchHandler({ body: parsedMsg.data }, res, () => {});
-        break;
-      case 'retrieveBatch':
-        await retrieveBatchHandler({ params: parsedMsg.data }, res, () => {});
-        break;
-      case 'cancelBatch':
-        await cancelBatchHandler({ params: parsedMsg.data }, res, () => {});
-        break;
-      case 'listBatches':
-        await listBatchesHandler({ query: parsedMsg.data }, res, () => {});
         break;
       case 'streamResponse':
         const { model, prompt } = parsedMsg.data;
+        chatHistory.push({ role: 'user', content: prompt });
+        clients.set(sessionId, { ws, chatHistory });
         await streamResponseWs(model, prompt, ws);
         break;
       default:

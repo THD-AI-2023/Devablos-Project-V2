@@ -5,6 +5,6 @@ const {
 
 const router = express.Router();
 
-router.post('/sendMessage', sendMessageHandler);
+router.post('/', sendMessageHandler);
 
 module.exports = router;

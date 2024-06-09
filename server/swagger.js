@@ -53,7 +53,7 @@ const doc = {
       description: 'Endpoints related to security and authentication',
     },
     {
-      name: 'GPT Assistant Chat',
+      name: 'GPT Assistants',
       description: 'Endpoints related to assistant chat functionality'
     }
   ],

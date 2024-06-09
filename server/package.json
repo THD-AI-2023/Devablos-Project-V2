@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node swagger && node ./src/bin/www",
-    "start-ws": "node ./src/sockets/wsServer.js",
-    "start-wss": "node ./src/sockets/wssServer.js"
+    "start-ws": "node ./src/sockets/wsServer.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

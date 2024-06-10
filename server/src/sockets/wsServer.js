@@ -14,27 +14,47 @@ server.on('connection', (ws, req) => {
   ws.on('message', async (message) => {
     try {
       const parsedMsg = JSON.parse(message);
-      const { sessionId } = parsedMsg.data;
+      const { action, data = {} } = parsedMsg;
+      const { sessionId, messages = [] } = data;
 
-      if (!sessionId) {
-        console.error('No sessionId provided in message:', message);
-        ws.send(JSON.stringify({ error: 'No sessionId provided' }));
-        return;
+      switch (action) {
+        case 'validateSession':
+          if (clients.has(sessionId)) {
+            ws.send(JSON.stringify({ action: 'sessionValidated', valid: true, messages: clients.get(sessionId).chatHistory }));
+          } else {
+            const newSessionId = uuidv4();
+            clients.set(newSessionId, { ws, chatHistory: messages });
+            ws.send(JSON.stringify({ action: 'sessionValidated', valid: false, sessionId: newSessionId, messages }));
+          }
+          break;
+        case 'createSession':
+          const newSessionId = uuidv4();
+          clients.set(newSessionId, { ws, chatHistory: messages });
+          ws.send(JSON.stringify({ action: 'sessionValidated', sessionId: newSessionId, messages }));
+          break;
+        case 'clearHistory':
+          if (clients.has(sessionId)) {
+            const clientData = clients.get(sessionId);
+            clientData.chatHistory = [];
+            clients.set(sessionId, clientData);
+          }
+          break;
+        default:
+          if (!sessionId) {
+            ws.send(JSON.stringify({ error: 'No sessionId provided' }));
+            return;
+          }
+          if (!clients.has(sessionId)) {
+            clients.set(sessionId, { ws, chatHistory: messages });
+          } else {
+            const clientData = clients.get(sessionId);
+            clientData.ws = ws;
+            clientData.chatHistory = messages;
+            clients.set(sessionId, clientData);
+          }
+          await openaiWsRoutes.handleWebSocket(ws, req, message);
       }
-
-      if (!clients.has(sessionId)) {
-        clients.set(sessionId, { ws, chatHistory: [] });
-      } else {
-        const clientData = clients.get(sessionId);
-        clientData.ws = ws;
-        clients.set(sessionId, clientData);
-      }
-
-      console.log(`Client connected: ${sessionId}`);
-
-      await openaiWsRoutes.handleWebSocket(ws, req, message);
     } catch (error) {
-      console.error(`Error handling message:`, error);
       ws.send(JSON.stringify({ error: error.message }));
     }
   });
@@ -43,7 +63,6 @@ server.on('connection', (ws, req) => {
     clients.forEach((clientData, sessionId) => {
       if (clientData.ws === ws) {
         clients.delete(sessionId);
-        console.log(`Client disconnected: ${sessionId}`);
       }
     });
   });

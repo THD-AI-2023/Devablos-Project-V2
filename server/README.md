@@ -2,6 +2,15 @@
 
 This directory contains the Express backend for the Devablos Project V2.
 
+## Table of Contents
+
+- [Directory Structure](#directory-structure)
+- [Development Process](#development-process)
+- [Naming Conventions](#naming-conventions)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Build for Production](#build-for-production)
+
 ## Directory Structure
 
 ```plaintext
@@ -9,51 +18,22 @@ server/
 ├── node_modules/
 ├── src/
 │   ├── api/
-│   │   ├── openai.js
-│   │   └── ...
 │   ├── config/
-│   │   ├── security.js
-│   │   └── ...
 │   ├── controllers/
-│   │   ├── chatController.js
-│   │   └── ...
 │   ├── middlewares/
-│   │   ├── authMiddleware.js
-│   │   └── ...
 │   ├── models/
-│   │   ├── userModel.js
-│   │   └── ...
 │   ├── routes/
-│   │   ├── chatRoutes.js
-│   │   ├── index.js
-│   │   ├── users.js
-│   │   └── ...
 │   ├── services/
-│   │   ├── chatService.js
-│   │   └── ...
 │   ├── sockets/
-│   │   ├── chatSocket.js
-│   │   └── ...
 │   ├── views/
-│   │   ├── layout.jade
-│   │   ├── index.jade
-│   │   ├── error.jade
-│   │   └── ...
 │   ├── bin/
-│   │   ├── www
-│   │   └── ...
 │   ├── public/
-│   │   ├── stylesheets/
-│   │   │   ├── style.css
-│   │   │   └── ...
 │   ├── app.js
-│   ├── server.js
-│   └── ...
+│   └── server.js
 ├── .env
 ├── .gitignore
 ├── package.json
-├── README.md
-└── ...
+└── README.md
 ```
 
 ## Development Process
@@ -102,7 +82,7 @@ This will start the Express server on `http://localhost:5000`.
 
 ## Environment Variables
 
-Create a `.env` file in the root of the `server` directory and add necessary configurations, e.g., OpenAI API key.
+Create a `.env` file in the root of the `server` directory and add necessary configurations, such as the OpenAI API key.
 
 ## Build for Production
 

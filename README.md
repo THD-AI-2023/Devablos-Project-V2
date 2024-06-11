@@ -13,16 +13,16 @@ devablos-project-v2/
 │   │   └── ...
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── ChatInput.js ✓
-│   │   │   ├── ChatMessages.js ✓
-│   │   │   ├── ChatWindow.js ✓
+│   │   │   ├── ChatInput.js
+│   │   │   ├── ChatMessages.js
+│   │   │   ├── ChatWindow.js
 │   │   │   └── ...
-│   │   ├── App.js ✓
-│   │   ├── index.js ✓
+│   │   ├── App.js
+│   │   ├── index.js
 │   │   └── ...
-│   ├── .gitignore 
+│   ├── .gitignore
 │   ├── package.json
-│   ├── README.md ✓
+│   ├── README.md
 │   └── ...
 ├── server/
 │   ├── node_modules/

@@ -1,14 +1,15 @@
-/* src/components/Chat.css */
 .chat-container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 80vh;
-  width: 400px;
+  width: 40vw; /* Use vw for width */
+  min-width: 400px; /* Maximum width */
   margin: auto;
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 10px;
+  font-size: 2vh;
   background-color: #f9f9f9;
 }
 

@@ -1,13 +1,13 @@
 const express = require('express');
 const {
-    retrieveModelsHandler,
-    singleResponseHandler,
-    chatResponseHandler,
-    createBatchHandler,
-    retrieveBatchHandler,
-    cancelBatchHandler,
-    listBatchesHandler,
-    streamResponseHandler
+  retrieveModelsHandler,
+  singleResponseHandler,
+  chatResponseHandler,
+  createBatchHandler,
+  retrieveBatchHandler,
+  cancelBatchHandler,
+  listBatchesHandler,
+  streamResponseHandler
 } = require('../controllers/openaiController');
 
 const router = express.Router();

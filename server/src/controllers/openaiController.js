@@ -6,7 +6,8 @@ const {
   retrieveBatch,
   cancelBatch,
   listBatches,
-  streamResponse
+  streamResponse,
+  streamResponseWs,
 } = require('../services/openaiService');
 const defaultModel = 'gpt-4o';
 
@@ -185,8 +186,7 @@ async function chatResponseHandler(req, res, next) {
     }
     const response = await generateChatResponses(model, messages);
     res.json(response);
-  }
-  catch (error) {
+  } catch (error) {
     return next(error);
   }
 }
@@ -416,4 +416,5 @@ module.exports = {
   cancelBatchHandler,
   listBatchesHandler,
   streamResponseHandler,
+  streamResponseWs,
 };

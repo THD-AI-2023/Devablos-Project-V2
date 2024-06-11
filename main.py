@@ -1,5 +1,6 @@
 import os
 import json
+import fnmatch
 
 def read_file(file_path):
     try:
@@ -8,16 +9,32 @@ def read_file(file_path):
     except UnicodeDecodeError:
         return None  # Skip binary files or files that cannot be decoded
 
-def dir_to_json(directory, ignore_list):
+def parse_gitignore(gitignore_path):
+    ignore_patterns = []
+    try:
+        with open(gitignore_path, 'r', encoding='utf-8') as file:
+            for line in file:
+                line = line.strip()
+                if line and not line.startswith('#'):
+                    ignore_patterns.append(line)
+    except FileNotFoundError:
+        pass
+    return ignore_patterns
+
+def is_ignored(file_path, ignore_patterns):
+    for pattern in ignore_patterns:
+        if fnmatch.fnmatch(file_path, pattern):
+            return True
+    return False
+
+def dir_to_json(directory):
     result = {}
+    ignore_patterns = []
     for root, dirs, files in os.walk(directory):
+        gitignore_path = os.path.join(root, '.gitignore')
+        ignore_patterns.extend(parse_gitignore(gitignore_path))
+
         relative_path = os.path.relpath(root, directory)
-
-        # Check if the current directory should be ignored
-        if any(os.path.commonpath([os.path.join(directory, ignore)]) == os.path.commonpath([os.path.join(directory, relative_path)]) for ignore in ignore_list):
-            dirs[:] = []  # Don't descend into this directory
-            continue
-
         if relative_path == ".":
             relative_path = ""
         sub_result = result
@@ -26,28 +43,17 @@ def dir_to_json(directory, ignore_list):
                 sub_result = sub_result.setdefault(part, {})
 
         for file in files:
-            file_relative_path = os.path.join(relative_path, file)
-            # Check if the file should be ignored
-            if any(os.path.commonpath([os.path.join(directory, ignore)]) == os.path.commonpath([os.path.join(directory, file_relative_path)]) for ignore in ignore_list):
-                continue
             file_path = os.path.join(root, file)
-            file_content = read_file(file_path)
-            if file_content is not None:
-                sub_result[file] = file_content
+            relative_file_path = os.path.relpath(file_path, directory)
+            if not is_ignored(relative_file_path, ignore_patterns):
+                file_content = read_file(file_path)
+                if file_content is not None:
+                    sub_result[file] = file_content
     return result
 
 def main():
     directory = r'.'
-    ignore_list = [
-        'server/node_modules',
-        'server/package-lock.json',
-        'server/swagger_output.json'
-    ]
-
-    # Normalize ignore list to include full paths relative to the directory
-    ignore_list = [os.path.normpath(ignore) for ignore in ignore_list]
-
-    json_data = dir_to_json(directory, ignore_list)
+    json_data = dir_to_json(directory)
     json_output = os.path.join(directory, 'output.json')
 
     with open(json_output, 'w', encoding='utf-8') as json_file:

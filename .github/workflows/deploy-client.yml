@@ -47,7 +47,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-        working-directory: ./client
+        # working-directory: ./client
 
       - name: Install dependencies and build client
         run: |

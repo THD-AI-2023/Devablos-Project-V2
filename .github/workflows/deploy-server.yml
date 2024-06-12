@@ -47,6 +47,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+        working-directory: ./server
 
       - name: Install dependencies and build server
         run: |

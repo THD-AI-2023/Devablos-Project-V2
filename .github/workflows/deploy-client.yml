@@ -30,8 +30,8 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: devablos-client    # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: './client' # path to the client project
-  NODE_VERSION: 18               # set this to the node version to use
+  AZURE_WEBAPP_PACKAGE_PATH: './client/build' # path to the built client project
+  NODE_VERSION: '18.x'                # set this to the node version to use
 
 permissions:
   contents: read
@@ -47,12 +47,13 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+        working-directory: ./client
 
       - name: Install dependencies and build client
         run: |
-          cd client
           npm install
           npm run build
+        working-directory: ./client
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3

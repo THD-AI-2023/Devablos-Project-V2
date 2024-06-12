@@ -31,6 +31,10 @@ jobs:
         cd client
         npm run build || true
 
+    - name: Verify build directory
+      run: |
+        ls -al client/build
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:

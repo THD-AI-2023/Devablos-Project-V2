@@ -26,6 +26,10 @@ jobs:
         cd server
         npm install
 
+    - name: Verify server directory
+      run: |
+        ls -al server
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:

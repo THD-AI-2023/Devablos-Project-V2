@@ -32,7 +32,7 @@ env:
   AZURE_WEBAPP_NAME: devablos-client    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: './client/build' # path to the built client project
   NODE_VERSION: '18.x'                  # set this to the node version to use
-  AZURE_WEBAPP_SLOT_NAME: 'staging'     # set this to the name of the deployment slot
+  AZURE_WEBAPP_SLOT_NAME:               # (optional) set this to the name of the deployment slot
 
 permissions:
   contents: read

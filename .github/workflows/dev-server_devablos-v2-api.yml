@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -39,9 +39,9 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: node-app
+          name: server-app
           path: ${{ env.WORKING_DIRECTORY }}/release.zip
 
   deploy:
@@ -53,16 +53,16 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: server-app
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: ${{ env.AZURE_SLOT_NAME }}

@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - devablos-v2-api
 on:
   push:
     branches:
-      - feature/deployment-setup
+      - main
   workflow_dispatch:
 
 jobs:

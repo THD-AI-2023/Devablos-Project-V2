@@ -19,7 +19,7 @@ const doc = {
       description: 'github.dev',
     },
     {
-      url: `https://${process.env.AZURE_APP_NAME}.azurewebsites.net/`,
+      url: `https://${process.env.WEBSITE_SITE_NAME}.azurewebsites.net/`,
       description: 'Azure Deployment',
     },
   ],

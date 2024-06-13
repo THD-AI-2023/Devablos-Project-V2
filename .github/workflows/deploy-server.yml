@@ -91,7 +91,7 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D0A888B4BC164A5BB3E2A7E890352EC9 }}
           slot-name: 'Production'
-          package: ${{ github.workspace }}
+          package: .
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SSL_CERT: ${{ secrets.SSL_CERT_CONTENT }}

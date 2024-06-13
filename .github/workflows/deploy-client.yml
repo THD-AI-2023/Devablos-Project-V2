@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'Development'
+      name: 'Production-Client'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:

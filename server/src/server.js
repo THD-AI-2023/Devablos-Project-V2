@@ -4,9 +4,23 @@ const fs = require('fs');
 const app = require('./app');
 
 // Read SSL key and certificate
-const privateKey = fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8');
-const certificate = fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8');
-const credentials = { key: privateKey, cert: certificate };
+function getSSLCredentials() {
+  let privateKey, certificate;
+
+  if (process.env.SSL_KEY_CONTENT && process.env.SSL_CERT_CONTENT) {
+      // Use environment variables
+      privateKey = process.env.SSL_KEY_CONTENT;
+      certificate = process.env.SSL_CERT_CONTENT;
+  } else {
+      // Fallback to file paths
+      privateKey = fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8');
+      certificate = fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8');
+  }
+
+  return { key: privateKey, cert: certificate };
+}
+
+const credentials = getSSLCredentials();
 
 // Create HTTPS server
 const httpsServer = https.createServer(credentials, app);

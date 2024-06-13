@@ -15,7 +15,6 @@ env:
   AZURE_SLOT_NAME: 'Production'         # set this to your slot name
   WORKING_DIRECTORY: './server'         # path to the server project
   NODE_VERSION: '20.x'                  # set this to the node version to use
-  DEPLOYMENT_NAME: 'Production-Server'  # set this to your GitHub's Deployment slot to use
 
 jobs:
   build:
@@ -50,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: ${{ env.DEPLOYMENT_NAME }}
+      name: 'Production-Server'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:

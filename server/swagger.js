@@ -18,9 +18,13 @@ const doc = {
       url: `https://${process.env.CODESPACE_NAME}-${process.env.PORT || '5000'}.app.github.dev/`,
       description: 'github.dev',
     },
+    {
+      url: `https://${process.env.AZURE_APP_NAME}.azurewebsites.net/`,
+      description: 'Azure Deployment',
+    },
   ],
   basePath: '/',
-  schemes: ['http'],
+  schemes: ['http', 'https'],
   consumes: ['application/json'],
   produces: ['application/json'],
   tags: [

@@ -3,8 +3,10 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 86.9vh;
+  height: auto;
+  min-height: 86.9vh;
   width: 98vw;
+  max-width: 97vw;
   margin: auto;
   padding: 10px;
   background-color: #00214d;
@@ -12,10 +14,12 @@
 
 .messages {
   flex-grow: 1;
-  overflow-y: auto;
   margin-bottom: 10px;
   align-self: center;
   text-align: justify;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  max-height: fit-content;
 }
 
 .chat-input {
@@ -23,6 +27,7 @@
   width: 48vw;
   max-height: 10vh;
   align-self: center;
+  top: 90vh;
 }
 
 .chat-input input {

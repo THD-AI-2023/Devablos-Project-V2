@@ -14,6 +14,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const openaiRouter = require('./routes/openaiRoutes');
 const assistantRouter = require('./routes/assistantRoutes');
+
 const app = express();
 
 // Configure CORS

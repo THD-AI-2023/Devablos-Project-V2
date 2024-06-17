@@ -7,10 +7,39 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Primitive weather function 
-async function get_weather(location_object) {
-    return "No data found at the moment. Try again later."
+// Weather function
+async function get_weather(locationString) {
+  if (!locationString) {
+      console.log("No location provided.");
+      return;
+  }
+
+  try {
+    location = JSON.parse(locationString).location;
+  } catch (error) {
+    console.log("Invalid location format:", error);
+    return;
+  }
+
+  const apiKey = process.env.OPENWEATHER_API_KEY;
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
+
+  try {
+      const response = await fetch(apiUrl);
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const weatherData = await response.json();
+      console.log(weatherData);
+      return weatherData;
+  } catch (error) {
+      console.log("Error obtaining data:", error);
+      throw error;
+  }
 }
+
 
 
 // Create Assistant
@@ -18,7 +47,7 @@ async function createAssistant() {
   try {
     console.log("Creating assistant...");
     const myAssistant = await openai.beta.assistants.create({
-      instructions: "You are the weather boy. You tell the weather conditions in specified locations.",
+      instructions: "You tell the requested weather conditions at a specified location.",
       model: "gpt-4o",
       tools: [
         {
@@ -60,9 +89,9 @@ async function createThread() {
 }
 
 // Add message to thread
-async function addToThread(threadID, message) {
+async function addToThread(thread, message) {
   try {
-    await openai.beta.threads.messages.create(threadID, {
+    await openai.beta.threads.messages.create(thread.id, {
       role: "user",
       content: message,
     });
@@ -73,10 +102,10 @@ async function addToThread(threadID, message) {
 }
 
 // Create a run
-async function createRun(threadID, assistantID) {
+async function createRun(thread, assistant) {
   try {
-    let run = await openai.beta.threads.runs.createAndPoll(threadID, {
-      assistant_id: assistantID,
+    let run = await openai.beta.threads.runs.createAndPoll(thread.id, {
+      assistant_id: assistant.id,
     });
     return run;
   } catch (error) {
@@ -99,10 +128,12 @@ async function handleRequiredAction(run, thread) {
           console.log("Location requested:", location);
           const weatherInfo = await get_weather(location);
           console.log("Weather info:", weatherInfo);
+          
+          // Convert weatherInfo to a string before returning
           return {
             tool_call_id: tool.id,
-            output: weatherInfo,
-          };
+            output: JSON.stringify(weatherInfo),
+        };
         }
       })
     );
@@ -166,9 +197,9 @@ async function sendMessage(message) {
     const assistant = await createAssistant();
     const thread = await createThread();
 
-    await addToThread(thread.id, message);
+    await addToThread(thread, message);
 
-    let run = await createRun(thread.id, assistant.id);
+    let run = await createRun(thread, assistant);
 
     await handleRunStatus(run, thread);
 
@@ -179,6 +210,8 @@ async function sendMessage(message) {
     throw error;
   }
 }
+
+
 
 module.exports = {
   sendMessage,

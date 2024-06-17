@@ -5,6 +5,21 @@ async function sendMessageHandler(req, res, next) {
     #swagger.tags = ['GPT Assistants']
     #swagger.summary = 'Sends message to GPT Assistant.'
     #swagger.description = 'This endpoint sends a message.'
+
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              prompt: { type: 'string', example: 'Tell me the chances of raining in Deggendorf, Germany.' }
+            }
+          }
+        }
+      }
+    }
+
     #swagger.responses[200] = { 
       description: 'Successful response', 
       content: {
@@ -36,7 +51,13 @@ async function sendMessageHandler(req, res, next) {
     #swagger.responses[500] = { description: 'Server error' }
   */
   try {
-    const response = await sendMessage("What's the weather like in Berlin?");
+    const message = req.body.prompt; // Extract message from request body
+    console.log(message);
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+    
+    const response = await sendMessage(message); // Pass message to sendMessage
     res.json(response);
   } catch (error) {
     next(error);

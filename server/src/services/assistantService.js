@@ -10,8 +10,8 @@ const openai = new OpenAI({
 // Weather function
 async function get_weather(locationString) {
   if (!locationString) {
-      console.log("No location provided.");
-      return;
+    console.log("No location provided.");
+    return;
   }
 
   try {
@@ -25,27 +25,24 @@ async function get_weather(locationString) {
   const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
 
   try {
-      const response = await fetch(apiUrl);
+    const response = await fetch(apiUrl);
 
-      if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-      }
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
 
-      const weatherData = await response.json();
-      console.log(weatherData);
-      return weatherData;
+    const weatherData = await response.json();
+    console.log(weatherData);
+    return weatherData;
   } catch (error) {
-      console.log("Error obtaining data:", error);
-      throw error;
+    console.log("Error obtaining data:", error);
+    throw error;
   }
 }
-
-
 
 // Create Assistant
 async function createAssistant() {
   try {
-    console.log("Creating assistant...");
     const myAssistant = await openai.beta.assistants.create({
       instructions: "You tell the requested weather conditions at a specified location.",
       model: "gpt-4o",
@@ -61,7 +58,7 @@ async function createAssistant() {
                 location: {
                   type: "string",
                   description: "The city and state, e.g., San Francisco, CA"
-                },
+                }
               },
               required: ["location"]
             }
@@ -69,7 +66,6 @@ async function createAssistant() {
         }
       ]
     });
-    console.log("Assistant created.");
     return myAssistant;
   } catch (error) {
     console.error("Error creating assistant:", error.response ? error.response.data : error);
@@ -93,7 +89,7 @@ async function addToThread(thread, message) {
   try {
     await openai.beta.threads.messages.create(thread.id, {
       role: "user",
-      content: message,
+      content: message
     });
   } catch (error) {
     console.error("Error adding to thread:", error);
@@ -105,7 +101,7 @@ async function addToThread(thread, message) {
 async function createRun(thread, assistant) {
   try {
     let run = await openai.beta.threads.runs.createAndPoll(thread.id, {
-      assistant_id: assistant.id,
+      assistant_id: assistant.id
     });
     return run;
   } catch (error) {
@@ -128,12 +124,12 @@ async function handleRequiredAction(run, thread) {
           console.log("Location requested:", location);
           const weatherInfo = await get_weather(location);
           console.log("Weather info:", weatherInfo);
-          
+
           // Convert weatherInfo to a string before returning
           return {
             tool_call_id: tool.id,
-            output: JSON.stringify(weatherInfo),
-        };
+            output: JSON.stringify(weatherInfo)
+          };
         }
       })
     );
@@ -144,7 +140,7 @@ async function handleRequiredAction(run, thread) {
       run = await openai.beta.threads.runs.submitToolOutputsAndPoll(
         thread.id,
         run.id,
-        { tool_outputs: toolOutputs },
+        { tool_outputs: toolOutputs }
       );
       console.log("Tool outputs submitted successfully.");
     } else {
@@ -170,40 +166,51 @@ const handleRunStatus = async (run, thread) => {
   }
 };
 
-// Retrieve and display messages
-async function displayMessages(thread) {
+// Retrieve and return the first assistant message
+async function getAssistantMessage(thread) {
   try {
     const threadMessages = await openai.beta.threads.messages.list(thread.id);
 
-    threadMessages.data.forEach(message => {
-      if (message.role === 'user') {
-        console.log(`User: ${message.content[0].text.value}`);
-      } else if (message.role === 'assistant') {
-        console.log(`Assistant: ${message.content[0].text.value}`);
-      } else if (message.role === 'function') {
-        console.log(`Function: ${message.content[0].text.value}`);
+    for (const message of threadMessages.data) {
+      if (message.role === 'assistant') {
+        return message.content[0].text.value;
       }
-    });
-
+    }
   } catch (error) {
-    console.error("Error displaying messages:", error);
+    console.error("Error retrieving assistant message:", error);
     throw error;
   }
 }
 
-// Send Message
-async function sendMessage(message) {
-  try {
-    const assistant = await createAssistant();
-    const thread = await createThread();
+// Creates an assistant and thread if user doesn't have one. Saves as JSON.
+async function create_user() {
+  const user = {
+    assistant: await createAssistant(),
+    thread: await createThread()
+  };
 
+  return user;
+}
+
+// Send message, user is JSON object.
+async function sendMessage(user, message) {
+  try {
+    const { assistant, thread } = user;
+
+    // Add message to the thread
     await addToThread(thread, message);
 
-    let run = await createRun(thread, assistant);
+    // Create a run
+    const run = await createRun(thread, assistant);
 
+    // Handle run status
     await handleRunStatus(run, thread);
 
-    await displayMessages(thread);
+    // Get assistant message. 
+    const assistant_message = await getAssistantMessage(thread);
+
+    // Return the updated user object with the new assistant and thread
+    return assistant_message;
 
   } catch (error) {
     console.error("Error sending message:", error);
@@ -211,8 +218,7 @@ async function sendMessage(message) {
   }
 }
 
-
-
 module.exports = {
   sendMessage,
-}
+  create_user,
+};

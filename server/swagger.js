@@ -37,6 +37,10 @@ const doc = {
       description: 'Endpoints related to OpenAI batch processing',
     },
     {
+      name: 'GPT Assistants',
+      description: 'Endpoints related to assistant chat functionality'
+    },
+    {
       name: 'API',
       description: 'General API endpoints',
     },
@@ -55,10 +59,6 @@ const doc = {
     {
       name: 'Security',
       description: 'Endpoints related to security and authentication',
-    },
-    {
-      name: 'GPT Assistants',
-      description: 'Endpoints related to assistant chat functionality'
     }
   ],
   securityDefinitions: {

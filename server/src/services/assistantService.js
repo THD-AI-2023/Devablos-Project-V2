@@ -208,6 +208,7 @@ async function removeThread(sessionId) {
 
     clients.beta.threads.delete(thread.id);
     const newThread = await createThread();
+
     user = {
       assistant: assistant,
       thread: newThread
@@ -226,8 +227,6 @@ async function sendMessage(sessionId, message) {
 
     const user = clients.get(sessionId);
 
-    console.log(user);
-
     const { assistant, thread } = user;
 
     // Add message to the thread
@@ -242,8 +241,9 @@ async function sendMessage(sessionId, message) {
     // Get assistant message.
     const assistant_message = await getAssistantMessage(thread);
 
+    const data = [assistant_message, thread];
     // Return the updated user object with the new assistant and thread
-    return thread;
+    return data;
 
   } catch (error) {
     console.error("Error sending message:", error);

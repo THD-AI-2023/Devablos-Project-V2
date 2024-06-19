@@ -1,7 +1,7 @@
 const {
-  sendMessageHandler,
-  create_userHandler,
-} = require('../controllers/assistantController.js');
+  sendMessage,
+  create_user,
+} = require('../services/assistantService');
 const clients = require('../utils/connection');
 
 async function handleWebSocket(ws, req) {
@@ -25,10 +25,6 @@ async function handleWebSocket(ws, req) {
       const sessionId = data.sessionId;
 
       switch (action) {
-        case 'createUser':
-          await create_userHandler({ body: {} }, res, () => {});
-          break;
-
         case 'sendMessage':
           if (!clients.has(sessionId)) {
             console.error('Session not found:', sessionId);
@@ -40,7 +36,7 @@ async function handleWebSocket(ws, req) {
 
           console.log(`Handling WebSocket action: ${action}`);
 
-          const newThread = await sendMessageHandler({ body: data }, res, () => {});
+          const newThread = await sendMessage();
 
           const user = {
             assistant,
@@ -48,6 +44,12 @@ async function handleWebSocket(ws, req) {
           };
 
           clients.set(sessionId, user);
+          break;
+
+        case 'clearThread':
+          if (clients.has(sessionId)) {
+            assistantServices.removeThread(sessionId);
+          }
           break;
 
         default:

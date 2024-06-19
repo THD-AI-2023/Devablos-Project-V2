@@ -1,5 +1,7 @@
 const { OpenAI } = require('openai');
 const dotenv = require("dotenv");
+const { v4: uuidv4 } = require('uuid');
+const clients = require('../utils/connection');
 dotenv.config();
 
 // Initialize OpenAI client
@@ -87,10 +89,12 @@ async function createThread() {
 // Add message to thread
 async function addToThread(thread, message) {
   try {
-    await openai.beta.threads.messages.create(thread.id, {
+    const newThread = await openai.beta.threads.messages.create(thread.id, {
       role: "user",
       content: message
     });
+
+    return newThread;
   } catch (error) {
     console.error("Error adding to thread:", error);
     throw error;
@@ -182,19 +186,48 @@ async function getAssistantMessage(thread) {
   }
 }
 
-// Creates an assistant and thread if user doesn't have one. Saves as JSON.
+// Creates an assistant and thread if user doesn't have one. Saves in clients map. 
 async function create_user() {
+  const sessionId = uuidv4();
+
   const user = {
     assistant: await createAssistant(),
     thread: await createThread()
   };
 
-  return user;
+  // Save user to clients map with sessionID as the key
+  clients.set(sessionId, user);
+  return sessionId;
+}
+
+// Previous thread deleted, new thread added. 
+async function removeThread(sessionId) {
+  try {
+    const user = await clients.get(sessionId);
+    const { assistant, thread } = user;
+
+    clients.beta.threads.delete(thread.id);
+    const newThread = await createThread();
+    user = {
+      assistant: assistant,
+      thread: newThread
+    }
+
+    clients.set(sessionId, user);
+  } catch (error) {
+    console.error("Error removing thread: ", error);
+    throw error;
+  }
 }
 
 // Send message, user is JSON object.
-async function sendMessage(user, message) {
+async function sendMessage(sessionId, message) {
   try {
+
+    const user = clients.get(sessionId);
+
+    console.log(user);
+
     const { assistant, thread } = user;
 
     // Add message to the thread
@@ -206,11 +239,11 @@ async function sendMessage(user, message) {
     // Handle run status
     await handleRunStatus(run, thread);
 
-    // Get assistant message. 
+    // Get assistant message.
     const assistant_message = await getAssistantMessage(thread);
 
     // Return the updated user object with the new assistant and thread
-    return assistant_message;
+    return thread;
 
   } catch (error) {
     console.error("Error sending message:", error);

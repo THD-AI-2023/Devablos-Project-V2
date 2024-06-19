@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node swagger && node ./src/bin/www",
-    "start-ws": "node ./src/sockets/wsServer.js"
+    "start-chat": "node ./src/sockets/wsServer_ChatGPT.js",
+    "start-pain": "node ./src/sockets/wsServer_Assistant.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

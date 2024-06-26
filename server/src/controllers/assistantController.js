@@ -13,8 +13,7 @@ async function sendMessageHandler(req, res, next) {
           schema: {
             type: 'object',
             properties: {
-              assistant: { type: 'object' },
-              thread: { type: 'object' },
+              sessionID: { type: 'string' },
               prompt: {
                 type: 'string',
                 example: 'Tell me the chances of raining in Deggendorf, Germany.'
@@ -59,19 +58,17 @@ async function sendMessageHandler(req, res, next) {
   */
  
   try {
-    const { assistant, thread, prompt } = req.body;
+    const { sessionID, prompt } = req.body;
 
     if (!prompt) {
       return res.status(400).json({ error: "Prompt is required" });
     }
 
-    if (!assistant || !thread) {
-      return res.status(400).json({ error: "Assistant and thread are required" });
+    if (!sessionID) {
+      return res.status(400).json({ error: "SessionID required" });
     }
 
-    const user = { assistant, thread };
-
-    const response = await sendMessage(user, prompt);
+    const response = await sendMessage(sessionID, prompt);
     res.json(response);
   } catch (error) {
     next(error);
@@ -118,6 +115,7 @@ async function create_userHandler(req, res, next) {
   try {
     const user = await create_user();
     res.json(user);
+    
   } catch (error) {
     next(error);
   }

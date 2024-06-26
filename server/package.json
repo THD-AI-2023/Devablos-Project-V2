@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node swagger && node ./src/bin/www",
-    "start-ws": "node ./src/sockets/wsServer.js"
+    "start-chat": "node ./src/sockets/wsServer_ChatGPT.js",
+    "start-pain": "node ./src/sockets/wsServer_Assistant.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -17,7 +18,7 @@
     "morgan": "^1.10.0",
     "openai": "^4.47.1",
     "pug": "^3.0.3",
-        "uuid": "^9.0.1",
+    "uuid": "^9.0.1",
     "ws": "^8.17.0"
   },
   "devDependencies": {

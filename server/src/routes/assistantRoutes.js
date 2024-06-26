@@ -1,10 +1,12 @@
 const express = require('express');
 const {
-    sendMessageHandler
+    sendMessageHandler,
+    create_userHandler,
 } = require('../controllers/assistantController');
 
 const router = express.Router();
 
-router.post('/', sendMessageHandler);
+router.get('/user', create_userHandler);
+router.post('/sendMessage', sendMessageHandler);
 
 module.exports = router;

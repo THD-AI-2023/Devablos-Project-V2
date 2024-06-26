@@ -5,7 +5,6 @@ dotenv.config();
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
-});
 
 // Weather function
 async function get_weather(locationString) {
@@ -75,12 +74,13 @@ async function createAssistant() {
 
 // Create thread
 async function createThread() {
-  try {
-    const thread = await openai.beta.threads.create();
-    return thread;
-  } catch (error) {
-    console.error("Error creating thread:", error);
-    throw error;
+try {
+  const thread = await openai.beta.threads.create();
+  return thread;
+
+} catch (error) {
+  console.error("Error creating thread:", error);
+  throw error;
   }
 }
 
@@ -91,6 +91,7 @@ async function addToThread(thread, message) {
       role: "user",
       content: message
     });
+
   } catch (error) {
     console.error("Error adding to thread:", error);
     throw error;
@@ -147,24 +148,21 @@ async function handleRequiredAction(run, thread) {
       console.log("No tool outputs to submit.");
     }
 
-    return handleRunStatus(run, thread);
+// Wait for run completion
+async function waitForRunCompletion(threadId, runId) {
+  try{
+  let runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+  while (runStatus.status !== 'completed') {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+  }
+  return runStatus;
+
+} catch(error) {
+  console.error("Error waiting for run completion: ", error);
+  throw error; 
   }
 }
-
-// Handle run status
-const handleRunStatus = async (run, thread) => {
-  // Check if the run is completed
-  if (run.status === "completed") {
-    let messages = await openai.beta.threads.messages.list(thread.id);
-    console.log(messages.data);
-    return messages.data;
-  } else if (run.status === "requires_action") {
-    console.log(run.status);
-    return await handleRequiredAction(run, thread);
-  } else {
-    console.error("Run did not complete:", run);
-  }
-};
 
 // Retrieve and return the first assistant message
 async function getAssistantMessage(thread) {
@@ -212,9 +210,11 @@ async function sendMessage(user, message) {
     // Return the updated user object with the new assistant and thread
     return assistant_message;
 
-  } catch (error) {
-    console.error("Error sending message:", error);
-    throw error;
+  await displayMessages(thread.id);
+
+} catch (error) {
+  console.error("Error sending message:", error);
+  throw error;
   }
 }
 

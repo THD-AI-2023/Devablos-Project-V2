@@ -18,9 +18,13 @@ const doc = {
       url: `https://${process.env.CODESPACE_NAME}-${process.env.PORT || '5000'}.app.github.dev/`,
       description: 'github.dev',
     },
+    {
+      url: `https://${process.env.WEBSITE_SITE_NAME}.azurewebsites.net/`,
+      description: 'Azure Deployment',
+    },
   ],
   basePath: '/',
-  schemes: ['http'],
+  schemes: ['http', 'https'],
   consumes: ['application/json'],
   produces: ['application/json'],
   tags: [
@@ -31,6 +35,10 @@ const doc = {
     {
       name: 'OpenAI Batch',
       description: 'Endpoints related to OpenAI batch processing',
+    },
+    {
+      name: 'GPT Assistants',
+      description: 'Endpoints related to assistant chat functionality'
     },
     {
       name: 'API',
@@ -51,10 +59,6 @@ const doc = {
     {
       name: 'Security',
       description: 'Endpoints related to security and authentication',
-    },
-    {
-      name: 'GPT Assistants',
-      description: 'Endpoints related to assistant chat functionality'
     }
   ],
   securityDefinitions: {

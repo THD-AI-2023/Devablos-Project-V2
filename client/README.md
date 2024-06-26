@@ -1,6 +1,6 @@
-# Server Directory
+# Client Directory
 
-This directory contains the Express backend for the Devablos Project V2.
+This directory contains the React frontend for the Devablos Project V2.
 
 ## Table of Contents
 
@@ -8,29 +8,22 @@ This directory contains the Express backend for the Devablos Project V2.
 - [Development Process](#development-process)
 - [Naming Conventions](#naming-conventions)
 - [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
 - [Build for Production](#build-for-production)
 
 ## Directory Structure
 
 ```plaintext
-server/
+client/
 ├── node_modules/
+├── public/
+│   └── index.html
 ├── src/
-│   ├── api/
-│   ├── config/
-│   ├── controllers/
-│   ├── middlewares/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── sockets/
-│   ├── views/
-│   ├── bin/
-│   ├── public/
-│   ├── app.js
-│   └── server.js
-├── .env
+│   ├── components/
+│   │   ├── ChatInput.js
+│   │   ├── ChatMessages.js
+│   │   └── ChatWindow.js
+│   ├── App.js
+│   └── index.js
 ├── .gitignore
 ├── package.json
 └── README.md
@@ -38,10 +31,10 @@ server/
 
 ## Development Process
 
-1. **Create a new branch from the `dev-server` branch**:
+1. **Create a new branch from the `dev-client` branch**:
     ```bash
-    git checkout dev-server
-    git pull origin dev-server
+    git checkout dev-client
+    git pull origin dev-client
     git checkout -b feature/github-username/feature-name
     ```
 
@@ -78,12 +71,17 @@ server/
     npm start
     ```
 
-This will start the Express server on `http://localhost:5000`.
-
-## Environment Variables
-
-Create a `.env` file in the root of the `server` directory and add necessary configurations, such as the OpenAI API key.
+This will start the React development server on `http://localhost:3000`.
 
 ## Build for Production
 
-To create a production build, ensure all dependencies are installed and the server is properly configured.
+To create a production build, run:
+```bash
+npm run build
+```
+
+This will create a `build` directory with the production build of your React app.
+
+## Additional Information
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). For more details on available scripts and advanced configuration, please refer to the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).

@@ -1,4 +1,4 @@
-const { sendMessage, create_user } = require('../services/assistantService');
+const { sendMessage, create_user, removeThread } = require('../services/assistantService');
 
 async function sendMessageHandler(req, res, next) {
   /*
@@ -121,7 +121,51 @@ async function create_userHandler(req, res, next) {
   }
 }
 
+async function removeThreadHandler(req, res, next) {
+  /*
+    #swagger.tags = ['GPT Assistants']
+    #swagger.summary = 'Deletes user thread.'
+    #swagger.description = 'This endpoint deletes user thread (history).'
+    
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              sessionID: { type: 'string' },
+            },
+            required: ['sessionID']
+          }
+        }
+      }
+    }
+
+    #swagger.responses[200] = { 
+      description: 'Successful deletion', 
+    }
+
+    #swagger.responses[500] = { description: 'Server error' }
+  */
+  
+    try {
+      const sessionID = req.body;
+
+      if (!sessionID) {
+        return res.status(400).json({ error: "SessionID is required" });
+      }
+
+      await removeThread(sessionID);
+      
+    } catch (error) {
+      next(error);
+    }
+}
+
+
 module.exports = {
   sendMessageHandler,
   create_userHandler,
+  removeThreadHandler,
 };

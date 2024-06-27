@@ -2,11 +2,13 @@ const { OpenAI } = require('openai');
 const dotenv = require("dotenv");
 const { v4: uuidv4 } = require('uuid');
 const clients = require('../utils/connection');
+
 dotenv.config();
 
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
+});
 
 // Weather function
 async function get_weather(locationString) {
@@ -15,6 +17,7 @@ async function get_weather(locationString) {
     return;
   }
 
+  let location;
   try {
     location = JSON.parse(locationString).location;
   } catch (error) {
@@ -27,11 +30,9 @@ async function get_weather(locationString) {
 
   try {
     const response = await fetch(apiUrl);
-
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }
-
     const weatherData = await response.json();
     console.log(weatherData);
     return weatherData;
@@ -76,13 +77,12 @@ async function createAssistant() {
 
 // Create thread
 async function createThread() {
-try {
-  const thread = await openai.beta.threads.create();
-  return thread;
-
-} catch (error) {
-  console.error("Error creating thread:", error);
-  throw error;
+  try {
+    const thread = await openai.beta.threads.create();
+    return thread;
+  } catch (error) {
+    console.error("Error creating thread:", error);
+    throw error;
   }
 }
 
@@ -93,7 +93,6 @@ async function addToThread(thread, message) {
       role: "user",
       content: message
     });
-
     return newThread;
   } catch (error) {
     console.error("Error adding to thread:", error);
@@ -128,8 +127,6 @@ async function handleRequiredAction(run, thread) {
           console.log("Location requested:", location);
           const weatherInfo = await get_weather(location);
           console.log("Weather info:", weatherInfo);
-
-          // Convert weatherInfo to a string before returning
           return {
             tool_call_id: tool.id,
             output: JSON.stringify(weatherInfo)
@@ -150,20 +147,21 @@ async function handleRequiredAction(run, thread) {
     } else {
       console.log("No tool outputs to submit.");
     }
+  }
+}
 
 // Wait for run completion
 async function waitForRunCompletion(threadId, runId) {
-  try{
-  let runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
-  while (runStatus.status !== 'completed') {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
-  }
-  return runStatus;
-
-} catch(error) {
-  console.error("Error waiting for run completion: ", error);
-  throw error; 
+  try {
+    let runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+    while (runStatus.status !== 'completed') {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+    }
+    return runStatus;
+  } catch (error) {
+    console.error("Error waiting for run completion: ", error);
+    throw error; 
   }
 }
 
@@ -171,7 +169,6 @@ async function waitForRunCompletion(threadId, runId) {
 async function getAssistantMessage(thread) {
   try {
     const threadMessages = await openai.beta.threads.messages.list(thread.id);
-
     for (const message of threadMessages.data) {
       if (message.role === 'assistant') {
         return message.content[0].text.value;
@@ -186,24 +183,20 @@ async function getAssistantMessage(thread) {
 // Creates an assistant and thread if user doesn't have one. Saves in clients map. 
 async function create_user() {
   const sessionId = uuidv4();
-
   const user = {
     assistant: await createAssistant(),
     thread: await createThread()
   };
-
-  // Save user to clients map with sessionID as the key
   clients.set(sessionId, user);
   return sessionId;
 }
 
-// Previous thread deleted, new thread added. 
+// Previous thread deleted, new thread added. (Currently does not work.)
 async function removeThread(sessionId) {
   try {
     const user = await clients.get(sessionId);
     const { assistant, thread } = user;
-
-    clients.beta.threads.delete(thread.id);
+    await openai.beta.threads.delete(thread.id);
     const newThread = await createThread();
 
     user = {
@@ -211,7 +204,8 @@ async function removeThread(sessionId) {
       thread: newThread
     }
 
-    clients.set(sessionId, user);
+    clients.set(sessionId, { assistant: assistant, thread: newThread });
+
   } catch (error) {
     console.error("Error removing thread: ", error);
     throw error;
@@ -221,36 +215,24 @@ async function removeThread(sessionId) {
 // Send message, user is JSON object.
 async function sendMessage(sessionId, message) {
   try {
-
     const user = clients.get(sessionId);
-
     const { assistant, thread } = user;
-
-    // Add message to the thread
     await addToThread(thread, message);
 
-    // Create a run
     const run = await createRun(thread, assistant);
+    await handleRequiredAction(run, thread);
+    await waitForRunCompletion(thread.id, run.id);
 
-    // Handle run status
-    await handleRunStatus(run, thread);
-
-    // Get assistant message.
-    const assistant_message = await getAssistantMessage(thread);
-
-    const data = [assistant_message, thread];
-    // Return the updated user object with the new assistant and thread
-    return data;
-
-  await displayMessages(thread.id);
-
-} catch (error) {
-  console.error("Error sending message:", error);
-  throw error;
+    const assistantMessage = await getAssistantMessage(thread);
+    return { assistantMessage };
+  } catch (error) {
+    console.error("Error sending message:", error);
+    throw error;
   }
 }
 
 module.exports = {
   sendMessage,
   create_user,
+  removeThread
 };

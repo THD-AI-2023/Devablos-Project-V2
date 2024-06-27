@@ -9,11 +9,9 @@ const HTTPS_URL = process.env.REACT_APP_SERVER_URL || `http://${window.location.
 
 function App() {
   const [socketUrl, setSocketUrl] = useState(WS_URL);
+
+  // TODO: add WSS -> WS fallback
   const [sessionId, setSessionId] = useState(localStorage.getItem('sessionId') || null);
-  const [messages, setMessages] = useState(() => {
-    const savedMessages = localStorage.getItem('chatHistory');
-    return savedMessages ? JSON.parse(savedMessages) : [{ role: 'system', content: 'You are Devabot ✨, a funny helpful assistant.' }];
-  });
   const [isConnected, setIsConnected] = useState(false);
 
   const { sendMessage, lastMessage, readyState, reconnect } = useWebSocket(socketUrl, {
@@ -21,9 +19,9 @@ function App() {
     onOpen: () => {
       setIsConnected(true);
       if (sessionId) {
-        sendMessage(JSON.stringify({ action: 'validateSession', data: { sessionId, messages } }));
+        sendMessage(JSON.stringify({ action: 'validateSession', data: sessionId }));
       } else {
-        sendMessage(JSON.stringify({ action: 'createSession', data: { messages } }));
+        sendMessage(JSON.stringify({ action: 'createSession' }));
       }
     },
     onClose: () => {
@@ -36,13 +34,7 @@ function App() {
           const newSessionId = parsedData.sessionId;
           setSessionId(newSessionId);
           localStorage.setItem('sessionId', newSessionId);
-        } else {
-          setMessages(parsedData.messages || []);
-          localStorage.setItem('chatHistory', JSON.stringify(parsedData.messages || []));
-        }
-      } else if (parsedData.action === 'chatHistory') {
-        setMessages(parsedData.messages);
-        localStorage.setItem('chatHistory', JSON.stringify(parsedData.messages));
+        } 
       } else {
         console.log('WebSocket message received:', message);
       }
@@ -50,45 +42,34 @@ function App() {
     onError: (error) => console.error('WebSocket error:', error)
   });
 
-  const clearHistory = () => {
-    localStorage.removeItem('chatHistory');
+  const clearThread = () => {
     if (isConnected && sessionId) {
-      sendMessage(JSON.stringify({ action: 'clearHistory', data: { sessionId } }));
+      sendMessage(JSON.stringify({ action: 'clearThread', data: { sessionId } }));
     }
-    setMessages([{ role: 'system', content: 'You are Devabot ✨, a funny helpful assistant.' }]);
   };
-
-  const sendMessageHandler = async (message) => {
-    const newMessage = { role: 'user', content: message };
-    const updatedMessages = [...messages, newMessage];
-    setMessages(updatedMessages);
-    localStorage.setItem('chatHistory', JSON.stringify(updatedMessages));
-
+  
+    const sendMessageHandler = async (message) => {
     if (isConnected) {
       sendMessage(JSON.stringify({
         action: 'chatResponse',
         data: {
-          model: 'gpt-3.5-turbo',
-          messages: updatedMessages,
+          message: message, //string can be given to assistant sendMessage and addToThread function
           sessionId: sessionId,
         },
       }));
     } else {
       // Fallback to HTTPS
       try {
-        const response = await fetch(`${HTTPS_URL}/api/openai/chat`, {
+        const response = await fetch(`${HTTPS_URL}/api/openai/assistant/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: updatedMessages,
+            message: message, //string can be given to assistant sendMessage and addToThread function
+            sessionId: sessionId,
           }),
         });
+        
         const data = await response.json();
-        const botMessage = { role: 'assistant', content: data.choices[0].message.content };
-        const finalMessages = [...updatedMessages, botMessage];
-        setMessages(finalMessages);
-        localStorage.setItem('chatHistory', JSON.stringify(finalMessages));
       } catch (error) {
         console.error('HTTPS request error:', error);
       }

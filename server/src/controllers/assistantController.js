@@ -1,4 +1,4 @@
-const { sendMessage, create_user } = require('../services/assistantService');
+const { sendMessage, create_user, removeThread } = require('../services/assistantService');
 
 async function sendMessageHandler(req, res, next) {
   /*
@@ -13,8 +13,7 @@ async function sendMessageHandler(req, res, next) {
           schema: {
             type: 'object',
             properties: {
-              assistant: { type: 'object' },
-              thread: { type: 'object' },
+              sessionID: { type: 'string' },
               prompt: {
                 type: 'string',
                 example: 'Tell me the chances of raining in Deggendorf, Germany.'
@@ -59,19 +58,17 @@ async function sendMessageHandler(req, res, next) {
   */
  
   try {
-    const { assistant, thread, prompt } = req.body;
+    const { sessionID, prompt } = req.body;
 
     if (!prompt) {
       return res.status(400).json({ error: "Prompt is required" });
     }
 
-    if (!assistant || !thread) {
-      return res.status(400).json({ error: "Assistant and thread are required" });
+    if (!sessionID) {
+      return res.status(400).json({ error: "SessionID required" });
     }
 
-    const user = { assistant, thread };
-
-    const response = await sendMessage(user, prompt);
+    const response = await sendMessage(sessionID, prompt);
     res.json(response);
   } catch (error) {
     next(error);
@@ -118,12 +115,57 @@ async function create_userHandler(req, res, next) {
   try {
     const user = await create_user();
     res.json(user);
+    
   } catch (error) {
     next(error);
   }
 }
 
+async function removeThreadHandler(req, res, next) {
+  /*
+    #swagger.tags = ['GPT Assistants']
+    #swagger.summary = 'Deletes user thread.'
+    #swagger.description = 'This endpoint deletes user thread (history).'
+    
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              sessionID: { type: 'string' },
+            },
+            required: ['sessionID']
+          }
+        }
+      }
+    }
+
+    #swagger.responses[200] = { 
+      description: 'Successful deletion', 
+    }
+
+    #swagger.responses[500] = { description: 'Server error' }
+  */
+  
+    try {
+      const sessionID = req.body;
+
+      if (!sessionID) {
+        return res.status(400).json({ error: "SessionID is required" });
+      }
+
+      await removeThread(sessionID);
+      
+    } catch (error) {
+      next(error);
+    }
+}
+
+
 module.exports = {
   sendMessageHandler,
   create_userHandler,
+  removeThreadHandler,
 };

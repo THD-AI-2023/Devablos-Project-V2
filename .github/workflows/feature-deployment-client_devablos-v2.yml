@@ -19,6 +19,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./client
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -53,8 +57,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
-        context: ./client
-        file: ./client/Dockerfile
+        file: Dockerfile
         push: true
         tags: ghcr.io/${{ steps.tag_name.outputs.REPO_OWNER }}/devablos-client:${{ steps.tag_name.outputs.TAG_NAME }}
 

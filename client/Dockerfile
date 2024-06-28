@@ -1,5 +1,5 @@
-# Use the official Node.js 20 image as a build stage.
-FROM node:20 as build
+# Use the official Node.js 20 image.
+FROM node:20
 
 # Create and change to the app directory.
 WORKDIR /usr/src/app
@@ -16,18 +16,6 @@ COPY . .
 # Build the React app
 RUN npm run build
 
-# Use a minimal Node.js runtime image as the final stage.
-FROM node:20-slim
-
-# Create and change to the app directory.
-WORKDIR /usr/src/app
-
-# Copy built files from the build stage.
-COPY --from=build /usr/src/app/build ./build
-
-# Install serve to serve the built app
-RUN npm install -g serve
-
 # Set the environment variables
 ENV NODE_ENV=production
 
@@ -35,4 +23,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Run the app
-CMD ["serve", "-s", "build"]
+CMD ["npx", "serve", "-s", "build"]

@@ -61,6 +61,16 @@ jobs:
         push: true
         tags: ghcr.io/${{ steps.tag_name.outputs.REPO_OWNER }}/devablos-client:${{ steps.tag_name.outputs.TAG_NAME }}
 
+    - name: Check if Docker image was created
+      run: |
+        IMAGE_TAG="ghcr.io/${{ steps.tag_name.outputs.REPO_OWNER }}/devablos-client:${{ steps.tag_name.outputs.TAG_NAME }}"
+        if ! docker image inspect $IMAGE_TAG > /dev/null 2>&1; then
+          echo "Docker image $IMAGE_TAG not found!"
+          exit 1
+        else
+          echo "Docker image $IMAGE_TAG created successfully."
+        fi
+
     # - name: Deploy to Azure Web App
     #   uses: azure/webapps-deploy@v3
     #   with:

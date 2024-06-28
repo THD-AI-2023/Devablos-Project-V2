@@ -58,10 +58,10 @@ jobs:
         push: true
         tags: ghcr.io/${{ steps.tag_name.outputs.REPO_OWNER }}/devablos-client:${{ steps.tag_name.outputs.TAG_NAME }}
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: 'devablos-v2'
-        slot-name: 'Production'
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_24C0F9DDFFF746E68E22409D43118BCE }}
-        images: 'ghcr.io/${{ steps.tag_name.outputs.REPO_OWNER }}/devablos-client:${{ steps.tag_name.outputs.TAG_NAME }}'
+    # - name: Deploy to Azure Web App
+    #   uses: azure/webapps-deploy@v3
+    #   with:
+    #     app-name: 'devablos-v2'
+    #     slot-name: 'Production'
+    #     publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_24C0F9DDFFF746E68E22409D43118BCE }}
+    #     images: 'ghcr.io/${{ steps.tag_name.outputs.REPO_OWNER }}/devablos-client:${{ steps.tag_name.outputs.TAG_NAME }}'

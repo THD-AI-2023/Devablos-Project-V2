@@ -5,13 +5,13 @@ FROM node:20
 WORKDIR /usr/src/app
 
 # Copy application dependency manifests to the container image.
-COPY client/package*.json ./
+COPY package*.json ./
 
 # Install production dependencies.
 RUN npm install --production
 
 # Copy application code to the container image.
-COPY client/ ./
+COPY . .
 
 # Build the React app
 RUN npm run build

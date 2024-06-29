@@ -36,10 +36,10 @@ jobs:
 
     - name: Set Environment Variables from .env.example
       run: |
-        cp client/.env.example client/.env
-        echo "PORT=${{ env.PORT }}" >> client/.env
-        echo "REACT_APP_SERVER_URL=${{ secrets.REACT_APP_SERVER_URL }}" >> client/.env
-        echo "REACT_APP_WS_URL=${{ secrets.REACT_APP_WS_URL }}" >> client/.env
+        cp .env.example .env
+        echo "PORT=${{ env.PORT }}" >> .env
+        echo "REACT_APP_SERVER_URL=${{ secrets.REACT_APP_SERVER_URL }}" >> .env
+        echo "REACT_APP_WS_URL=${{ secrets.REACT_APP_WS_URL }}" >> .env
 
     - name: Extract tag name
       id: tag_name

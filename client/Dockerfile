@@ -22,8 +22,8 @@ RUN npm install -g serve
 # Set the environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV REACT_APP_SERVER_URL=https://devablos-v2-api.azurewebsites.net
-ENV REACT_APP_WS_URL=wss://devablos-v2-api.azurewebsites.net/ws
+ENV REACT_APP_SERVER_URL=https://localhost:5000
+ENV REACT_APP_WS_URL=wss://localhost:5001
 ENV HTTPS=true
 
 # Expose the port the app runs on

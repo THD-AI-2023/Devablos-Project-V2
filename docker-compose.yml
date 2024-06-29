@@ -5,6 +5,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    image: hlexnc/devablos-project-v2-client
     ports:
       - "3000:3000"
 
@@ -12,9 +13,7 @@ services:
   #   build:
   #     context: .
   #     dockerfile: server/Dockerfile
+  #   image: hlexnc/devablos-project-v2-server
   #   ports:
   #     - "5000:5000"
   #     - "5001:5001"
-  #   volumes:
-  #     - ./public.pem:/usr/src/app/ssl/public.pem
-  #     - ./private.pem:/usr/src/app/ssl/private.pem

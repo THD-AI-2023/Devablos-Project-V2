@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: server/Dockerfile
+  #   ports:
+  #     - "5000:5000"
+  #     - "5001:5001"
+  #   volumes:
+  #     - ./public.pem:/usr/src/app/ssl/public.pem
+  #     - ./private.pem:/usr/src/app/ssl/private.pem

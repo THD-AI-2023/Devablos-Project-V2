@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  # client:
-  #   build:
-  #     context: ./client
-  #     dockerfile: Dockerfile
-  #   image: hlexnc/devablos-project-v2-client
-  #   platform: linux/amd64
-  #   ports:
-  #     - "3000:3000"
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: hlexnc/devablos-project-v2-client
+    platform: linux/amd64
+    ports:
+      - "3000:3000"
 
   server:
     build:
@@ -19,3 +19,4 @@ services:
     ports:
       - "5000:5000"
       - "5001:5001"
+  

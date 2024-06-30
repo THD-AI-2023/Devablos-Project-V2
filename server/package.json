@@ -5,9 +5,11 @@
   "scripts": {
     "start": "node swagger && node ./src/bin/www",
     "start-chat": "node ./src/sockets/wsServer_ChatGPT.js",
-    "start-pain": "node ./src/sockets/wsServer_Assistant.js"
+    "start-pain": "node ./src/sockets/wsServer_Assistant.js",
+    "start:all": "concurrently \"npm run start\" \"npm run start-pain\""
   },
   "dependencies": {
+    "concurrently": "^8.2.2",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "^4.3.4",

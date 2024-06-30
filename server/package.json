@@ -6,7 +6,7 @@
     "start": "node swagger && node ./src/bin/www",
     "start-chat": "node ./src/sockets/wsServer_ChatGPT.js",
     "start-pain": "node ./src/sockets/wsServer_Assistant.js",
-    "start:all": "concurrently \"npm run start\" \"npm run start-pain\""
+    "start:all": "concurrently \"npm run start\" \"npm run start-chat\""
   },
   "dependencies": {
     "concurrently": "^8.2.2",

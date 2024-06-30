@@ -1,16 +1,25 @@
 const WebSocket = require('ws');
+const https = require('https');
 const { v4: uuidv4 } = require('uuid');
 const dotenv = require('dotenv');
 const clients = require('../utils/connection');
 const openaiWsRoutes = require('../routes/openaiWsRoutes');
+const fs = require('fs');
 
 dotenv.config();
 
-const WS_PORT = process.env.WS_PORT || 5001;
+const WSS_PORT = process.env.WSS_PORT || 5001;
 
-const server = new WebSocket.Server({ port: WS_PORT });
+const serverConfig = {
+  key: fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8'),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8'),
+};
 
-server.on('connection', (ws, req) => {
+const server = https.createServer(serverConfig);
+
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', (ws, req) => {
   ws.on('message', async (message) => {
     try {
       const parsedMsg = JSON.parse(message);
@@ -78,4 +87,6 @@ server.on('connection', (ws, req) => {
   }, 14 * 60 * 1000); // 14 minutes to send a keep-alive message
 });
 
-console.log(`WebSocket server is listening on port ${WS_PORT}`);
+server.listen(WSS_PORT, () => {
+  console.log(`WebSocket server is listening on port ${WSS_PORT}`);
+});

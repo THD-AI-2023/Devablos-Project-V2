@@ -1,84 +1,69 @@
 const WebSocket = require('ws');
 const https = require('https');
+const http = require('http');
 const dotenv = require('dotenv');
 const clients = require('../utils/connection');
 const assistantServices = require('../services/assistantService');
-const fs = require('fs');
 
 dotenv.config();
 
-const WSS_PORT = process.env.WSS_PORT || 5002;
+const WS_PORT = process.env.WS_PORT || 5001;
 
-// Load SSL key and certificate
-const serverConfig = {
-  key: fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8'),
-  cert: fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8'),
-};
+// Create and pass HTTP server
+const httpServer = http.createServer();
+const ws = new WebSocket.Server({ server: httpServer });
 
-// Create HTTPS server
-const server = https.createServer(serverConfig);
-
-// Pass HTTPS server to WebSocket Server
-const wss = new WebSocket.Server({ server });
-
-wss.on('connection', (ws, req) => {
+function handleConnection(ws, req) {
   console.log("New client connected!");
+  let sessionId, user_message;
 
   ws.on('message', async (message) => {
     try {
       const parsedMsg = JSON.parse(message);
-      const { action, data = {} } = parsedMsg;
-      const { sessionId } = data;
+      const { action, data } = parsedMsg;
 
       switch (action) {
         case 'validateSession':
+          ({ sessionId } = data);
           if (clients.has(sessionId)) {
-            ws.send(JSON.stringify({ action: 'sessionValidated', valid: true }));
+            ws.send(JSON.stringify({ action: 'sessionValidated', valid: true, sessionId }));
           } else {
-            const newSessionId = await assistantServices.create_user();
-            ws.send(JSON.stringify({ action: 'sessionValidated', valid: false, sessionId: newSessionId }));
+            sessionId = await assistantServices.create_user();
+            ws.send(JSON.stringify({ action: 'sessionValidated', valid: false, sessionId }));
           }
           break;
 
         case 'createSession':
-          const newSessionId = await assistantServices.create_user();
-          ws.send(JSON.stringify({ action: 'sessionValidated', sessionId: newSessionId }));
+          sessionId = await assistantServices.create_user();
+          ws.send(JSON.stringify({ action: 'sessionValidated', valid: false, sessionId }));
           break;
 
         case 'sendMessage':
+          ({ sessionId, user_message } = data);
           if (!clients.has(sessionId)) {
             console.error('Session not found:', sessionId);
             ws.send(JSON.stringify({ error: 'Session not found' }));
             return;
           }
-
           let assistant = clients.get(sessionId).assistant;
-
-          console.log(`Handling WebSocket action: ${action}`);
-
-          // You need to implement sendMessage function
-          const newThread = await assistantServices.sendMessage(sessionId, data.message);
-
-          const user = {
-            assistant: assistant,
-            thread: newThread[1],
-          };
-
-          clients.set(sessionId, user);
-          ws.send(JSON.stringify({ action: 'assistantMessage', message: newThread[0] }));
+          const assistant_message = await assistantServices.sendMessage(sessionId, user_message);
+          ws.send(JSON.stringify({ action: 'assistantMessage', assistant_message }));
           break;
 
-        case 'clearThread':
+        case 'deleteSession':
+          ({ sessionId } = data);
+          console.log(sessionId);
           if (clients.has(sessionId)) {
-            assistantServices.removeThread(sessionId);
+            assistantServices.deleteSession(sessionId);
           }
           break;
 
         default:
-          if (!sessionId) {
+          if (!data || !data.sessionId) {
             ws.send(JSON.stringify({ error: 'No sessionId provided' }));
             return;
           }
+          break;
       }
     } catch (error) {
       ws.send(JSON.stringify({ error: error.message }));
@@ -86,12 +71,12 @@ wss.on('connection', (ws, req) => {
   });
 
   ws.on('close', () => {
-    clients.forEach((clientData, sessionId) => {
-      if (clientData.ws === ws) {
-        clients.delete(sessionId);
-      }
+    if (sessionId && clients.has(sessionId)) {
+      clients.delete(sessionId);
+      console.log(`Client disconnected. Session ${sessionId} removed.`);
+    } else {
       console.log("Client disconnected.");
-    });
+    }
   });
 
   ws.on('error', (error) => {
@@ -103,8 +88,10 @@ wss.on('connection', (ws, req) => {
       ws.send(JSON.stringify({ message: 'Session is being kept alive.' }));
     }
   }, 14 * 60 * 1000); // 14 minutes to send a keep-alive message
-});
+}
 
-server.listen(WSS_PORT, () => {
-  console.log(`WebSocket server is listening on port ${WSS_PORT}`);
+ws.on('connection', handleConnection);
+
+httpServer.listen(WS_PORT, () => {
+  console.log(`WS server is listening on port ${WS_PORT}`);
 });

@@ -1,0 +1,32 @@
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: hlexnc/devablos-project-v2-client
+    platform: linux/amd64
+    ports:
+      - "3000:3000"
+    environment:
+      - HTTPS=true
+      - SSL_CRT_FILE=/etc/ssl/certs/localhost.pem
+      - SSL_KEY_FILE=/etc/ssl/private/localhost-key.pem
+    volumes:
+      - D:/Devablos-Project-V2/.certs:/etc/ssl/certs
+      - D:/Devablos-Project-V2/.private:/etc/ssl/private
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: hlexnc/devablos-project-v2-server
+    platform: linux/amd64
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    volumes:
+      - D:/Devablos-Project-V2/.certs:/etc/ssl/certs
+      - D:/Devablos-Project-V2/.private:/etc/ssl/private
+    environment:
+      - SSL_KEY_PATH=/etc/ssl/private/localhost-key.pem
+      - SSL_CERT_PATH=/etc/ssl/certs/localhost.pem

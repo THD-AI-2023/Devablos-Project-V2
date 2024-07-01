@@ -90,7 +90,7 @@ devablos-project-v2/
     # PowerShell Script:
     mkcert -install
     New-Item -ItemType Directory -Path .certs, .private
-    mkcert -key-file .\.private\localhost-key.pem -cert-file .\.certs\localhost.pem localhost 127.0.0.1 ::1\
+    mkcert -key-file .\.private\localhost-key.pem -cert-file .\.certs\localhost.pem localhost 127.0.0.1 ::1
     ```
 
 2. Ensure the certificate files are placed in the correct directories:

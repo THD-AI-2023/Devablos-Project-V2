@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:22-slim
 
 WORKDIR /usr/src/app
 
@@ -10,6 +10,6 @@ COPY . .
 
 COPY .env .env
 
-EXPOSE 5000 5001
+EXPOSE 5001
 
-CMD ["npm", "run", "start:all"]
+CMD ["npm", "run", "start:pain"]

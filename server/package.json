@@ -6,7 +6,8 @@
     "start": "node swagger && node ./src/server.js",
     "start:chat": "node ./src/sockets/wsServer_ChatGPT.js",
     "start:pain": "node ./src/sockets/wsServer_Assistant.js",
-    "start:all": "concurrently \"npm run start\" \"npm run start:chat\""
+    "start:pain:secure": "node ./src/sockets/wssServer_Assistant.js",
+    "start:all": "concurrently \"npm run start:pain\" \"npm run start:pain:secure\""
   },
   "dependencies": {
     "concurrently": "^8.2.2",
@@ -18,6 +19,7 @@
     "http-errors": "^2.0.0",
     "https": "^1.0.0",
     "morgan": "^1.10.0",
+    "node-fetch": "^2.7.0",
     "openai": "^4.47.1",
     "pug": "^3.0.3",
     "uuid": "^9.0.1",

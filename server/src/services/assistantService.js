@@ -1,6 +1,7 @@
 const { OpenAI } = require('openai');
 const dotenv = require("dotenv");
 const { v4: uuidv4 } = require('uuid');
+const fetch = require('node-fetch');
 const clients = require('../utils/connection');
 
 dotenv.config();
@@ -34,7 +35,6 @@ async function get_weather(locationString) {
       throw new Error(`Error: ${response.statusText}`);
     }
     const weatherData = await response.json();
-    console.log(weatherData);
     return weatherData;
   } catch (error) {
     console.log("Error obtaining data:", error);
@@ -46,7 +46,7 @@ async function get_weather(locationString) {
 async function createAssistant() {
   try {
     const myAssistant = await openai.beta.assistants.create({
-      instructions: "You tell the requested weather conditions at a specified location.",
+      instructions: "You tell the requested weather conditions at a specified location. You format your responses for a text message.",
       model: "gpt-4o",
       tools: [
         {
@@ -111,6 +111,11 @@ async function createRun(thread, assistant) {
     console.error("Error creating run: ", error);
     throw error;
   }
+}
+
+// Delete session
+async function deleteSession(sessionID) {
+  clients.delete(sessionID);
 }
 
 // Handles required_action run status
@@ -182,35 +187,19 @@ async function getAssistantMessage(thread) {
 
 // Creates an assistant and thread if user doesn't have one. Saves in clients map. 
 async function create_user() {
-  const sessionId = uuidv4();
-  const user = {
-    assistant: await createAssistant(),
-    thread: await createThread()
-  };
-  clients.set(sessionId, user);
-  return sessionId;
-}
-
-// Previous thread deleted, new thread added. (Currently does not work.)
-async function removeThread(sessionId) {
   try {
-    const user = await clients.get(sessionId);
-    const { assistant, thread } = user;
-    await openai.beta.threads.delete(thread.id);
-    const newThread = await createThread();
-
-    user = {
-      assistant: assistant,
-      thread: newThread
-    }
-
-    clients.set(sessionId, { assistant: assistant, thread: newThread });
-
-  } catch (error) {
-    console.error("Error removing thread: ", error);
+    const sessionId = uuidv4();
+    const user = {
+      assistant: await createAssistant(),
+      thread: await createThread()
+    };
+    clients.set(sessionId, user);
+    return sessionId;
+} catch(error) {
+    console.error("Error creating user", error);
     throw error;
-  }
-}
+    }
+} 
 
 // Send message, user is JSON object.
 async function sendMessage(sessionId, message) {
@@ -224,7 +213,15 @@ async function sendMessage(sessionId, message) {
     await waitForRunCompletion(thread.id, run.id);
 
     const assistantMessage = await getAssistantMessage(thread);
-    return { assistantMessage };
+
+    const new_user = {
+      assistant: assistant,
+      thread: thread,
+    };
+
+    clients.set(sessionId, new_user);
+
+    return assistantMessage;
   } catch (error) {
     console.error("Error sending message:", error);
     throw error;
@@ -234,5 +231,5 @@ async function sendMessage(sessionId, message) {
 module.exports = {
   sendMessage,
   create_user,
-  removeThread
+  deleteSession
 };

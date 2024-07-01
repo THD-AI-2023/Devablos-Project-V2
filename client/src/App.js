@@ -4,10 +4,11 @@ import Chat from './components/Chat';
 import Navbar from './components/Navbar';
 import './App.css';
 
-const HTTPS_URL = process.env.REACT_APP_SERVER_URL || `https://${window.location.hostname}:5000`;
+const SERVER_URL = process.env.REACT_APP_SERVER_URL || 'https://localhost:5000';
 
-function App() {
-  const [socketUrl, setSocketUrl] = useState(HTTPS_URL);
+const App = () => {
+  const [useWebSocketProtocol, setUseWebSocketProtocol] = useState(true);
+  const [socketUrl, setSocketUrl] = useState(`${SERVER_URL.replace(/^http/, 'ws')}`);
   const [sessionId, setSessionId] = useState(localStorage.getItem('sessionId') || null);
   const [messages, setMessages] = useState(() => {
     const savedMessages = localStorage.getItem('chatHistory');
@@ -15,34 +16,29 @@ function App() {
   });
   const [isConnected, setIsConnected] = useState(false);
 
+  const {
+    sendMessage: sendWebSocketMessage,
+    lastMessage,
+    readyState,
+  } = useWebSocket(socketUrl, {
+    onOpen: () => setIsConnected(true),
+    onClose: () => setIsConnected(false),
+    onError: (error) => console.error('WebSocket error:', error),
+    onMessage: (message) => handleMessage(message),
+    shouldReconnect: () => true,
+    reconnectAttempts: 20,
+    reconnectInterval: 3000,
+  });
+
   const validateOrCreateSession = useCallback(() => {
     if (sessionId) {
       console.log('Validating existing session:', sessionId);
-      sendMessage(JSON.stringify({ action: 'validateSession', data: { sessionId } }));
+      sendWebSocketMessage(JSON.stringify({ action: 'validateSession', data: { sessionId } }));
     } else {
       console.log('Creating new session');
-      sendMessage(JSON.stringify({ action: 'createSession' }));
+      sendWebSocketMessage(JSON.stringify({ action: 'createSession' }));
     }
-  }, [sessionId]);
-
-  const handleOpen = useCallback(() => {
-    console.log('WebSocket connected');
-    setIsConnected(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    console.log('WebSocket disconnected');
-    setIsConnected(false);
-    setSocketUrl(HTTPS_URL);
-  }, []);
-
-  const handleError = useCallback(
-    (error) => {
-      console.error('WebSocket error:', error);
-      setSocketUrl(HTTPS_URL);
-    },
-    []
-  );
+  }, [sessionId, sendWebSocketMessage]);
 
   const handleMessage = useCallback(
     (message) => {
@@ -78,35 +74,24 @@ function App() {
     [sessionId]
   );
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
-    onOpen: handleOpen,
-    onClose: handleClose,
-    onError: handleError,
-    onMessage: handleMessage,
-    shouldReconnect: (closeEvent) => true,
-    reconnectAttempts: 20,
-    reconnectInterval: 3000,
-  });
-
   const clearHistory = useCallback(() => {
     localStorage.removeItem('chatHistory');
     setMessages([{ role: 'system', content: 'You are Devabot ✨, a funny helpful assistant.' }]);
 
     if (isConnected) {
-      sendMessage(JSON.stringify({ action: 'deleteSession', data: { sessionId } }));
+      sendWebSocketMessage(JSON.stringify({ action: 'deleteSession', data: { sessionId } }));
       localStorage.removeItem('sessionId');
       setSessionId(null);
     }
-  }, [isConnected, sendMessage, sessionId]);
+  }, [isConnected, sendWebSocketMessage, sessionId]);
 
   const sendMessageHandler = async (message) => {
     const newMessage = { role: 'user', content: message };
     const updatedMessages = [...messages, newMessage];
     setMessages(updatedMessages);
-    localStorage.setItem('chatHistory', JSON.stringify(updatedMessages));
 
-    if (isConnected) {
-      sendMessage(
+    if (useWebSocketProtocol && isConnected) {
+      sendWebSocketMessage(
         JSON.stringify({
           action: 'sendMessage',
           data: {
@@ -116,7 +101,33 @@ function App() {
         })
       );
     } else {
-      console.error('WebSocket is not connected. Unable to send message.');
+      try {
+        const response = await fetch(`${SERVER_URL}/api/openai/assistant/sendMessage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionID: sessionId,
+            prompt: message,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Error response from server:', errorData);
+          throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('Response data:', data);
+        const returnedMessage = data.assistant_message || data;
+        const newAssistantMessage = { role: 'assistant', content: returnedMessage };
+        setMessages((prevMessages) => [...prevMessages, newAssistantMessage]);
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
     }
   };
 
@@ -137,24 +148,27 @@ function App() {
 
   useEffect(() => {
     if (readyState === ReadyState.OPEN) {
-      if (sessionId) {
-        validateOrCreateSession();
-      } else {
-        sendMessage(JSON.stringify({ action: 'createSession' }));
-      }
+      validateOrCreateSession();
     }
-  }, [readyState, sessionId, validateOrCreateSession, sendMessage]);
+  }, [readyState, validateOrCreateSession]);
 
   useEffect(() => {
     localStorage.setItem('chatHistory', JSON.stringify(messages));
   }, [messages]);
 
+  const toggleProtocol = () => {
+    setUseWebSocketProtocol((prev) => !prev);
+  };
+
   return (
     <div className="App">
-      <Navbar status={getStatus()} onReconnect={() => setSocketUrl(HTTPS_URL)} onClearHistory={clearHistory} />
+      <Navbar status={getStatus()} onReconnect={() => setSocketUrl(`${SERVER_URL.replace(/^http/, 'ws')}`)} onClearHistory={clearHistory} />
+      <button onClick={toggleProtocol}>
+        Toggle Protocol (Current: {useWebSocketProtocol ? 'WebSocket' : 'HTTPS'})
+      </button>
       <Chat sendMessage={sendMessageHandler} lastMessage={lastMessage} messages={messages} />
     </div>
   );
-}
+};
 
 export default App;

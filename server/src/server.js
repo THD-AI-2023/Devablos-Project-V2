@@ -1,5 +1,4 @@
 const https = require('https');
-const http = require('http');
 const fs = require('fs');
 const WebSocket = require('ws');
 const express = require('express');
@@ -17,7 +16,7 @@ const credentials = {
 };
 
 // Create HTTPS server
-const httpsServer = https.createServer(credentials, app);
+const server = https.createServer(credentials, app);
 
 // Normalize a port into a number, string, or false
 const normalizePort = val => {
@@ -30,7 +29,7 @@ const normalizePort = val => {
 const port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
 
-// Error handler for HTTP server
+// Error handler for server
 const onError = error => {
   if (error.syscall !== 'listen') {
     throw error;
@@ -50,20 +49,20 @@ const onError = error => {
   }
 };
 
-// Event listener for HTTP server "listening" event
+// Event listener for server "listening" event
 const onListening = () => {
-  const addr = httpsServer.address();
+  const addr = server.address();
   const bind = typeof addr === 'string' ? 'Pipe ' + addr : 'Port ' + addr.port;
   console.log('Listening on ' + bind);
 };
 
 // Listen on provided port, on all network interfaces
-httpsServer.listen(port);
-httpsServer.on('error', onError);
-httpsServer.on('listening', onListening);
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
 
-// WebSocket server for ws:// and wss://
-const wss = new WebSocket.Server({ server: httpsServer });
+// WebSocket server
+const wss = new WebSocket.Server({ server });
 
 // Define the handleConnection function
 const handleConnection = (ws, req) => {

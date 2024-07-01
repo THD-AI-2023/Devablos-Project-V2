@@ -7,7 +7,7 @@
     "start:chat": "node ./src/sockets/wsServer_ChatGPT.js",
     "start:pain": "node ./src/sockets/wsServer_Assistant.js",
     "start:pain:secure": "node ./src/sockets/wssServer_Assistant.js",
-    "start:all": "concurrently \"npm run start:pain\" \"npm run start:pain:secure\""
+    "start:all": "concurrently \"npm run start\" \"npm run start:pain\" \"npm run start:pain:secure\""
   },
   "dependencies": {
     "concurrently": "^8.2.2",

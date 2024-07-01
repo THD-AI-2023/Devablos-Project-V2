@@ -1,17 +1,22 @@
 const WebSocket = require('ws');
 const https = require('https');
-const http = require('http');
 const dotenv = require('dotenv');
 const clients = require('../utils/connection');
 const assistantServices = require('../services/assistantService');
+const fs = require('fs');
 
 dotenv.config();
 
-const WS_PORT = process.env.WS_PORT || 5001;
+const WSS_PORT = process.env.WSS_PORT || 5002;
 
-// Create and pass HTTP server
-const httpServer = http.createServer();
-const ws = new WebSocket.Server({ server: httpServer });
+const serverConfig = {
+  key: fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8'),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8'),
+};
+
+// Create and pass HTTPS server
+const httpsServer = https.createServer(serverConfig);
+const wss = new WebSocket.Server({ server: httpsServer });
 
 function handleConnection(ws, req) {
   console.log("New client connected!");
@@ -35,7 +40,7 @@ function handleConnection(ws, req) {
 
         case 'createSession':
           sessionId = await assistantServices.create_user();
-          ws.send(JSON.stringify({ action: 'sessionValidated', valid: false, sessionId }));
+          ws.send(JSON.stringify({ action: 'sessionValidated', valid: true, sessionId }));
           break;
 
         case 'sendMessage':
@@ -72,7 +77,6 @@ function handleConnection(ws, req) {
 
   ws.on('close', () => {
     if (sessionId && clients.has(sessionId)) {
-      clients.delete(sessionId);
       console.log(`Client disconnected. Session ${sessionId} removed.`);
     } else {
       console.log("Client disconnected.");
@@ -90,8 +94,8 @@ function handleConnection(ws, req) {
   }, 14 * 60 * 1000); // 14 minutes to send a keep-alive message
 }
 
-ws.on('connection', handleConnection);
+wss.on('connection', handleConnection);
 
-httpServer.listen(WS_PORT, () => {
-  console.log(`WS server is listening on port ${WS_PORT}`);
+httpsServer.listen(WSS_PORT, () => {
+  console.log(`WSS server is listening on port ${WSS_PORT}`);
 });

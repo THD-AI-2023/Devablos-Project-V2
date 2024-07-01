@@ -3,13 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node swagger && node ./src/server.js",
-    "start:chat": "node ./src/sockets/wsServer_ChatGPT.js",
-    "start:pain": "node ./src/sockets/wsServer_Assistant.js",
-    "start:all": "concurrently \"npm run start\" \"npm run start:chat\""
+    "start": "node swagger && node ./src/bin/www",
+    "start-chat": "node ./src/sockets/wsServer_ChatGPT.js",
+    "start-unsecure": "node ./src/sockets/wsServer_Assistant.js",
+    "start-secure": "node ./src/sockets/wssServer_Assistant.js"
   },
   "dependencies": {
-    "concurrently": "^8.2.2",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "^4.3.4",
@@ -18,6 +17,7 @@
     "http-errors": "^2.0.0",
     "https": "^1.0.0",
     "morgan": "^1.10.0",
+    "node-fetch": "^2.7.0",
     "openai": "^4.47.1",
     "pug": "^3.0.3",
     "uuid": "^9.0.1",

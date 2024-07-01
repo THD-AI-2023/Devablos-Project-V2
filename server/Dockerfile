@@ -10,6 +10,6 @@ COPY . .
 
 COPY .env .env
 
-EXPOSE 5000 5001 5002
+EXPOSE 5000
 
-CMD ["npm", "run", "start:pain"]
+CMD ["npm", "start"]

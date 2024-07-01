@@ -7,6 +7,8 @@ This repository contains a chatbot application with both client and server compo
 - [Directory Structure](#directory-structure)
 - [Client Setup](#client-setup)
 - [Server Setup](#server-setup)
+- [Creating SSL Certificates](#creating-ssl-certificates)
+- [Running with Docker](#running-with-docker)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -28,6 +30,10 @@ devablos-project-v2/
 │   ├── .gitignore
 │   ├── package.json
 │   └── README.md
+├── .certs/
+│   └── localhost.pem
+├── .private/
+│   └── localhost-key.pem
 ├── .gitignore
 ├── LICENSE
 ├── README.md
@@ -68,6 +74,42 @@ devablos-project-v2/
 4. Start the Node.js server:
     ```bash
     npm start
+    ```
+
+## Creating SSL Certificates
+
+1. Use `mkcert` to create SSL certificates:
+    ```bash
+    # Unix-like Environment Script:
+    mkcert -install
+    mkdir -p .certs .private
+    mkcert -key-file ./.private/localhost-key.pem -cert-file ./.certs/localhost.pem localhost 127.0.0.1 ::1
+    ```
+
+    ```bash
+    # PowerShell Script:
+    mkcert -install
+    New-Item -ItemType Directory -Path .certs, .private
+    mkcert -key-file .\.private\localhost-key.pem -cert-file .\.certs\localhost.pem localhost 127.0.0.1 ::1\
+    ```
+
+2. Ensure the certificate files are placed in the correct directories:
+    ```plaintext
+    Devablos-Project-V2/
+    ├── .certs/
+    │   └── localhost.pem
+    ├── .private/
+    │   └── localhost-key.pem
+    ```
+
+## Running with Docker
+
+1. Ensure Docker is installed and running on your machine.
+
+2. Navigate to the project root directory and run:
+    ```bash
+    docker-compose down
+    docker-compose up --build
     ```
 
 ## Contributing

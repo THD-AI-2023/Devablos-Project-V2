@@ -1,4 +1,5 @@
 const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const WebSocket = require('ws');
 const express = require('express');
@@ -9,14 +10,7 @@ const app = require('./app');
 
 dotenv.config();
 
-// Read SSL key and certificate
-const credentials = {
-  key: fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8'),
-  cert: fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8')
-};
-
-// Create HTTPS server
-const server = https.createServer(credentials, app);
+const useHttps = process.env.USE_SSL === 'true';
 
 // Normalize a port into a number, string, or false
 const normalizePort = val => {
@@ -27,6 +21,19 @@ const normalizePort = val => {
 };
 
 const port = normalizePort(process.env.PORT || '5000');
+
+let server;
+
+if (useHttps) {
+  const credentials = {
+    key: fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8'),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8'),
+  };
+  server = https.createServer(credentials, app);
+} else {
+  server = http.createServer(app);
+}
+
 app.set('port', port);
 
 // Error handler for server

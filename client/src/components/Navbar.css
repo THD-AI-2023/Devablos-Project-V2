@@ -14,11 +14,28 @@
   height: 60px;
 }
 
+.status-container {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
 .status {
   cursor: pointer;
   font-size: 2vh;
-  margin-right: 2vh;
-  margin-left: auto;
+  margin-right: 1vh;
+}
+
+.toggle-protocol {
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  font-size: 2vh;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 1vh;
+  min-width: 100px; /* Ensure the button doesn't change size when text changes */
 }
 
 .clear-chat {
@@ -30,5 +47,4 @@
   padding: 5px 10px;
   border-radius: 5px;
   margin-right: 5vh;
-  margin-left: 20px;
 }

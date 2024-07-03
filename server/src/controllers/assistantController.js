@@ -59,6 +59,7 @@ async function sendMessageHandler(req, res, next) {
  
   try {
     const { sessionID, prompt } = req.body;
+    console.log(sessionID, prompt);
 
     if (!prompt) {
       return res.status(400).json({ error: "Prompt is required" });
@@ -69,6 +70,7 @@ async function sendMessageHandler(req, res, next) {
     }
 
     const response = await sendMessage(sessionID, prompt);
+    console.log(response);
     res.json(response);
   } catch (error) {
     next(error);

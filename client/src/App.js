@@ -70,8 +70,7 @@ const App = () => {
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
       }
-    },
-    [sessionId]
+    }, [sessionId]
   );
 
   const clearHistory = useCallback(() => {
@@ -132,6 +131,7 @@ const App = () => {
   };
 
   const getStatus = () => {
+    const currentProtocol = useWebSocketProtocol ? 'WSS' : 'HTTPS';
     const protocolIndicator = currentProtocol === 'WSS' ? '🌐' : '🔒';
     switch (readyState) {
       case ReadyState.CONNECTING:
@@ -161,23 +161,18 @@ const App = () => {
     setUseWebSocketProtocol((prev) => !prev);
   };
 
-  // In App.js
-return (
-  <div className="App">
-    <Navbar 
-      status={getStatus()} 
-      onReconnect={() => setSocketUrl(`${SERVER_URL.replace(/^http/, 'ws')}`)} 
-      onClearHistory={clearHistory}
-      useWebSocketProtocol={useWebSocketProtocol}
-      onToggleProtocol={toggleProtocol}
-    />
-    {/* Remove this button */}
-    {/* <button onClick={toggleProtocol}>
-      Toggle Protocol (Current: {useWebSocketProtocol ? 'WebSocket' : 'HTTPS'})
-    </button> */}
-    <Chat sendMessage={sendMessageHandler} lastMessage={lastMessage} messages={messages} />
-  </div>
-);
+  return (
+    <div className="App">
+      <Navbar 
+        status={getStatus()} 
+        onReconnect={() => setSocketUrl(`${SERVER_URL.replace(/^http/, 'ws')}`)} 
+        onClearHistory={clearHistory}
+        useWebSocketProtocol={useWebSocketProtocol}
+        onToggleProtocol={toggleProtocol}
+      />
+      <Chat sendMessage={sendMessageHandler} lastMessage={lastMessage} messages={messages} />
+    </div>
+  );
 };
 
 export default App;

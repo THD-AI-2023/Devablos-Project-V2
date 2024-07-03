@@ -75,7 +75,7 @@ const App = () => {
 
   const clearHistory = useCallback(() => {
     localStorage.removeItem('chatHistory');
-    setMessages([{ role: 'system', content: 'You are Devabot ✨, a funny helpful assistant.' }]);
+    setMessages([{ role: 'system', content: 'You are Devabot ✨, a funny helpful assistant. You tell the requested weather conditions at a specified location. You format your responses as txt paragraphs.' }]);
 
     if (isConnected) {
       sendWebSocketMessage(JSON.stringify({ action: 'deleteSession', data: { sessionId } }));

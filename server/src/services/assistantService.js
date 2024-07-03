@@ -46,7 +46,7 @@ async function get_weather(locationString) {
 async function createAssistant() {
   try {
     const myAssistant = await openai.beta.assistants.create({
-      instructions: "You tell the requested weather conditions at a specified location. You format your responses for a text message.",
+      instructions: "You are Devabot ✨, a funny helpful assistant. You tell the requested weather conditions at a specified location. You format your responses as txt paragraphs.",
       model: "gpt-4o",
       tools: [
         {

@@ -12,8 +12,8 @@ services:
     #   - SSL_CRT_FILE=/etc/ssl/certs/localhost.pem
     #   - SSL_KEY_FILE=/etc/ssl/private/localhost-key.pem
     volumes:
-      - D:/Devablos-Project-V2/.certs:/etc/ssl/certs
-      - D:/Devablos-Project-V2/.private:/etc/ssl/private
+      - ./.certs:/etc/ssl/certs
+      - ./.private:/etc/ssl/private
 
   server:
     build:
@@ -24,8 +24,8 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - D:/Devablos-Project-V2/.certs:/etc/ssl/certs
-      - D:/Devablos-Project-V2/.private:/etc/ssl/private
+      - ./.certs:/etc/ssl/certs
+      - ./.private:/etc/ssl/private
     environment:
       - SSL_KEY_PATH=/etc/ssl/private/localhost-key.pem
       - SSL_CERT_PATH=/etc/ssl/certs/localhost.pem

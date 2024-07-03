@@ -11,7 +11,7 @@ const doc = {
   },
   servers: [
     {
-      url: `http://localhost:${process.env.PORT || '5000'}/`,
+      url: `https://localhost:${process.env.PORT || '5000'}/`,
       description: 'localhost',
     },
     {

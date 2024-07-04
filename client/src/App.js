@@ -74,8 +74,10 @@ const App = () => {
   );
 
   const clearHistory = useCallback(() => {
+    const systemMessage = process.env.REACT_APP_SYSTEM_MESSAGE;
     localStorage.removeItem('chatHistory');
-    setMessages([{ role: 'system', content: 'You are Devabot ✨, a funny helpful assistant. You tell the requested weather conditions at a specified location. You format your responses as txt paragraphs.' }]);
+    setMessages([{ role: 'system', content: systemMessage }]);
+    console.log(systemMessage);
 
     if (isConnected) {
       sendWebSocketMessage(JSON.stringify({ action: 'deleteSession', data: { sessionId } }));

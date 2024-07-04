@@ -132,3 +132,5 @@ dist
 
 # Security file
 *.pem
+*/.env.production
+*/.env.production

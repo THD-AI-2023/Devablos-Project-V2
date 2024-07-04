@@ -1,89 +1,65 @@
-# Server Directory
+# Server Application for Devablos Project V2
 
-This directory contains the Express backend for the Devablos Project V2.
+This directory contains the Express-based backend for the Devablos Project V2. It handles API requests, WebSocket connections, and integrates with OpenAI's API for advanced functionalities.
 
-## Table of Contents
+## Features
 
-- [Directory Structure](#directory-structure)
-- [Development Process](#development-process)
-- [Naming Conventions](#naming-conventions)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Build for Production](#build-for-production)
+- WebSocket and HTTPS support for real-time interactions.
+- Integration with OpenAI API.
+- Docker support for easy deployment and scaling.
+- SSL configuration for secure communications.
 
 ## Directory Structure
 
-```plaintext
+```
 server/
-├── node_modules/
 ├── src/
 │   ├── api/
-│   ├── config/
 │   ├── controllers/
-│   ├── middlewares/
-│   ├── models/
 │   ├── routes/
 │   ├── services/
-│   ├── sockets/
-│   ├── views/
-│   ├── bin/
-│   ├── public/
+│   ├── utils/
 │   ├── app.js
 │   └── server.js
-├── .env
+├── .env.example
 ├── .gitignore
+├── Dockerfile
 ├── package.json
 └── README.md
 ```
 
-## Development Process
-
-1. **Create a new branch from the `dev-server` branch**:
-    ```bash
-    git checkout dev-server
-    git pull origin dev-server
-    git checkout -b feature/github-username/feature-name
-    ```
-
-2. **Make your changes and commit them**:
-    ```bash
-    git add .
-    git commit -m "Add description of the feature"
-    ```
-
-3. **Push your branch to the repository**:
-    ```bash
-    git push origin feature/github-username/feature-name
-    ```
-
-4. **Create a Pull Request (PR)**:
-    - Go to the repository on GitHub.
-    - You should see a prompt to compare & pull request your recently pushed branch.
-    - Create a PR and assign a reviewer.
-
-## Naming Conventions
-
-- Branch names should follow the structure: `feature/github-username/feature-name`.
-- Commit messages should be descriptive of the changes made.
-
 ## Getting Started
 
-1. **Install dependencies**:
-    ```bash
-    npm install
-    ```
+### Install Dependencies
 
-2. **Start the development server**:
-    ```bash
-    npm start
-    ```
+```bash
+npm install
+```
 
-This will start the Express server on `http://localhost:5000`.
+### Running Locally
 
-## Environment Variables
+```bash
+npm start
+```
 
-Create a `.env` file in the root of the `server` directory and add necessary configurations, such as the OpenAI API key.
+This command starts the Express server at `http://localhost:5000`.
 
-## Build for Production
+### Environment Variables
 
-To create a production build, ensure all dependencies are installed and the server is properly configured.
+Set up your `.env` based on the `.env.example` file. This includes setting the OpenAI API key, OpenWeather API key, and other necessary configurations.
+
+## Dockerization
+
+The application is dockerized for production and development environments. See the main [README](../README.md) for Docker commands and setup details.
+
+## API Documentation
+
+Access the Swagger UI at `http://localhost:5000/admin` to view and interact with the API documentation.
+
+## Contributing
+
+Contributions to enhance functionalities or documentation are welcome. Please adhere to our [Code of Conduct](../CODE_OF_CONDUCT.md) when contributing.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.

@@ -27,6 +27,7 @@
   flex-grow: 1;
   padding: 10px;
   border: 1px solid #ccc;
+  font-size: 1.5vh;
   border-radius: 5px;
 }
 
@@ -37,5 +38,17 @@
   color: white;
   cursor: pointer;
   border-radius: 5px;
+  font-size: 1.5vh;
   margin-left: 5px;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .chat-input input {
+    font-size: 1.5vh;
+  }
+
+  .chat-input button {
+    font-size: 1.5vh;
+  }
 }

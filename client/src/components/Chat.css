@@ -3,8 +3,8 @@
   flex-direction: column;
   justify-content: space-between;
   height: 80vh;
-  width: 40vw; /* Use vw for width */
-  min-width: 400px; /* Maximum width */
+  width: 100%;
+  max-width: 600px;
   margin: auto;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -27,7 +27,9 @@
   flex-grow: 1;
   padding: 10px;
   border: 1px solid #ccc;
+  font-size: 1.5vh;
   border-radius: 5px;
+  box-sizing: border-box;
 }
 
 .chat-input button {
@@ -37,5 +39,17 @@
   color: white;
   cursor: pointer;
   border-radius: 5px;
+  font-size: 1.5vh;
   margin-left: 5px;
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    width: 90%;
+  }
+
+  .chat-input input,
+  .chat-input button {
+    font-size: 1.5vh;
+  }
 }

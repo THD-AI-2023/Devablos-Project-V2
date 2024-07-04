@@ -11,6 +11,8 @@ Welcome to the Devablos Project V2, a full-stack chatbot application leveraging 
 
 Visit our live application at [Devablos V2](https://devablos-v2.azurewebsites.net/) to see it in action.
 
+![image](https://github.com/THD-AI-2023/Devablos-Project-V2/assets/66517969/bff44cc1-0a48-4b75-8cb4-3526dd7b043f)
+
 ## Directory Structure
 
 ```txt

@@ -1,18 +1,14 @@
 .websocket-status {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: 100%;
-    padding: 10px;
-    background-color: #282c34;
-  }
-  
-  .websocket-status span {
-    cursor: pointer;
-    margin-right: 20px;
-  }
-  
-  .websocket-status button {
-    cursor: pointer;
-  }
-  
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  background-color: #282c34;
+  box-sizing: border-box;
+}
+
+.websocket-status span {
+  cursor: pointer;
+  margin-right: 20px;
+}

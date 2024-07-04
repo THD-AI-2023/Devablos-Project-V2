@@ -3,16 +3,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100vw;
-  height: 10vh;
-  padding: 1vh;
+  width: 100%;
+  padding: 10px;
   background-color: #001021;
   color: white;
+  box-sizing: border-box;
 }
 
 .logo {
-  height: 7vh;
-  margin-left: 5vh;
+  height: 10vh;
+  margin-left: 3vh;
 }
 
 .status-container {
@@ -47,7 +47,7 @@
   font-size: 2vh;
   padding: 5px 10px;
   border-radius: 5px;
-  margin-right: 5vh;
+  margin-right: 3vh;
 }
 
 /* Mobile styles */
@@ -59,19 +59,7 @@
     background-color: #001021;
     color: white;
     width: 100%;
-    position: relative;
-    padding: 0;
-  }
-
-  .navbar-mobile::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background-color: #001021;
-    z-index: -1;
+    padding: 10px;
   }
 
   .navbar-top,
@@ -80,53 +68,38 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 5.5vw;
-    padding: 1vh;
-  }
-
-  .navbar-top {
-    border-bottom: 1px solid #333;
   }
 
   .navbar-top .logo {
-    margin-left: 1vh;
-  }
-
-  .navbar-top .status-container {
-    margin-left: 0;
-    padding-right: 1vh;
-  }
-
-  .navbar-bottom {
-    justify-content: space-around;
-    padding: 1vh 0;
+    margin-left: 10px;
   }
 
   .status {
     font-size: 3vw;
     margin-right: 0;
-    padding-right: 1vh;
+    padding-right: 5vw;
   }
 
   .logo {
-    height: 9vw;
-    padding-left: 1vw;
-    margin-left: 1vh;
+    height: 5vh;
+    padding-left: 1vh;
+    margin-left: 10px;
   }
 
   .toggle-protocol,
   .clear-chat {
-    margin: 0 1vh;
-    min-width: 45%;
-    height: 5vw;
+    margin: 5px 0;
+    width: 90%;
     font-size: 2.5vw;
   }
 
   .toggle-protocol {
-    margin-right: 0;
+    margin-right: 10px;
+    margin-left: 20px;
   }
 
   .clear-chat {
-    margin-left: 0;
+    margin-left: 10px;
+    margin-right: 20px;
   }
 }

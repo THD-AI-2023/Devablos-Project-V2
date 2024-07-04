@@ -11,7 +11,7 @@ This directory contains the Express-based backend for the Devablos Project V2. I
 
 ## Directory Structure
 
-```
+```txt
 server/
 ├── src/
 │   ├── api/

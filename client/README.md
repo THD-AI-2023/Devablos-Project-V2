@@ -10,7 +10,7 @@ This directory contains the React-based frontend for the Devablos Project V2. It
 
 ## Directory Structure
 
-```
+```txt
 client/
 ├── public/
 │   ├── index.html
@@ -55,7 +55,6 @@ This will create a `build` directory with a production build of the app, which y
 ## Environment Variables
 
 Make sure to set up your `.env` file based on the `.env.example` provided.
-
 
 ## Dockerization
 

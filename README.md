@@ -13,7 +13,7 @@ Visit our live application at [Devablos V2](https://devablos-v2.azurewebsites.ne
 
 ## Directory Structure
 
-```
+```txt
 devablos-project-v2/
 ├── client/
 │   ├── public/
@@ -52,6 +52,7 @@ Before running the application, you need to set up the environment variables and
 2. **SSL Certificates**:
    - Use `mkcert` to create SSL certificates. If `mkcert` is not installed, [install it](https://github.com/FiloSottile/mkcert) first.
    - Run the following commands to generate certificates:
+
      ```bash
      mkcert -install
      mkdir -p .certs .private
@@ -61,7 +62,6 @@ Before running the application, you need to set up the environment variables and
 ### Running the Application
 
 After setting up the environment variables and SSL certificates, you can start the application using Docker Compose:
-
 
 ```bash
 docker-compose up --build

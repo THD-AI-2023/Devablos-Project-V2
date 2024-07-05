@@ -1,121 +1,90 @@
 # Devablos Project V2
 
-This repository contains a chatbot application with both client and server components. The client uses React for the frontend, while the backend, built with Node.js and Express, handles WebSockets, security, and interactions with OpenAI's API.
+Welcome to the Devablos Project V2, a full-stack chatbot application leveraging React for the frontend and Node.js with Express for the backend. This project integrates WebSocket for real-time interactions and uses OpenAI's API for advanced functionalities.
 
-## Table of Contents
+## Key Features
 
-- [Directory Structure](#directory-structure)
-- [Client Setup](#client-setup)
-- [Server Setup](#server-setup)
-- [Creating SSL Certificates](#creating-ssl-certificates)
-- [Running with Docker](#running-with-docker)
-- [Contributing](#contributing)
-- [License](#license)
+- **Real-Time Communication**: WebSocket and Secure WebSocket (WSS) integration.
+- **SSL Security**: Configured SSL certificates for HTTPS communication.
+- **Weather Information**: Fetch and display weather conditions using OpenWeather API.
+- **Flexible Protocols**: Toggle between WebSocket and HTTPS directly from the UI.
+
+Visit our live application at [Devablos V2](https://devablos-v2.azurewebsites.net/) to see it in action.
+
+![image](https://github.com/THD-AI-2023/Devablos-Project-V2/assets/66517969/bff44cc1-0a48-4b75-8cb4-3526dd7b043f)
 
 ## Directory Structure
 
-```plaintext
+```txt
 devablos-project-v2/
 ├── client/
-│   ├── node_modules/
 │   ├── public/
 │   ├── src/
-│   ├── .gitignore 
+│   ├── Dockerfile
 │   ├── package.json
 │   └── README.md
 ├── server/
-│   ├── node_modules/
-│   └── src/
-│   ├── .env
-│   ├── .gitignore
+│   ├── src/
+│   ├── Dockerfile
 │   ├── package.json
 │   └── README.md
-├── .certs/
-│   └── localhost.pem
-├── .private/
-│   └── localhost-key.pem
+├── .dockerignore
+├── docker-compose.yml
 ├── .gitignore
+├── CODE_OF_CONDUCT.md
 ├── LICENSE
-├── README.md
-└── package.json
+└── README.md
 ```
 
-## Client Setup
+## Quick Start
 
-1. Navigate to the `client` directory:
-    ```bash
-    cd client
-    ```
+### Prerequisites
 
-2. Install dependencies:
-    ```bash
-    npm install
-    ```
+- Docker and Docker Compose
+- Node.js and npm
 
-3. Start the React development server:
-    ```bash
-    npm start
-    ```
+### Environment Setup
 
-## Server Setup
+Before running the application, you need to set up the environment variables and SSL certificates:
 
-1. Navigate to the `server` directory:
-    ```bash
-    cd server
-    ```
+1. **Environment Variables**:
+   - Copy `.env.example` to `.env` in both the `client/` and `server/` directories.
+   - Modify the `.env` files to include your specific configurations, such as API keys and other necessary settings.
 
-2. Install dependencies:
-    ```bash
-    npm install
-    ```
+2. **SSL Certificates**:
+   - Use `mkcert` to create SSL certificates. If `mkcert` is not installed, [install it](https://github.com/FiloSottile/mkcert) first.
+   - Run the following commands to generate certificates:
 
-3. Create a `.env` file and add necessary configurations (e.g., OpenAI API key).
+     ```bash
+     mkcert -install
+     mkdir -p .certs .private
+     mkcert -key-file ./.private/localhost-key.pem -cert-file ./.certs/localhost.pem localhost 127.0.0.1 ::1
+     ```
 
-4. Start the Node.js server:
-    ```bash
-    npm start
-    ```
+### Running the Application
 
-## Creating SSL Certificates
+After setting up the environment variables and SSL certificates, you can start the application using Docker Compose:
 
-1. Use `mkcert` to create SSL certificates:
-    ```bash
-    # Unix-like Environment Script:
-    mkcert -install
-    mkdir -p .certs .private
-    mkcert -key-file ./.private/localhost-key.pem -cert-file ./.certs/localhost.pem localhost 127.0.0.1 ::1
-    ```
+```bash
+docker-compose up --build
+```
 
-    ```bash
-    # PowerShell Script:
-    mkcert -install
-    New-Item -ItemType Directory -Path .certs, .private
-    mkcert -key-file .\.private\localhost-key.pem -cert-file .\.certs\localhost.pem localhost 127.0.0.1 ::1
-    ```
+This command builds the Docker images and starts the containers defined in `docker-compose.yml`. Check the services are running:
 
-2. Ensure the certificate files are placed in the correct directories:
-    ```plaintext
-    Devablos-Project-V2/
-    ├── .certs/
-    │   └── localhost.pem
-    ├── .private/
-    │   └── localhost-key.pem
-    ```
+- Frontend at: `http://localhost:3000`
+- Backend at: `http://localhost:5000`
 
-## Running with Docker
+## Documentation
 
-1. Ensure Docker is installed and running on your machine.
+For more details on project setup, features, and contributions, refer to the specific README files in the `client` and `server` directories:
 
-2. Navigate to the project root directory and run:
-    ```bash
-    docker-compose down
-    docker-compose up --build
-    ```
+- [Client README](client/README.md)
+- [Server README](server/README.md)
 
 ## Contributing
 
-We welcome pull requests. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing to help maintain a friendly and inclusive environment.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

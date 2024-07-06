@@ -6,9 +6,9 @@ COPY package*.json ./
 
 RUN npm install --production
 
-RUN npm run generate-sitemap
-
 COPY . .
+
+RUN npm run generate-sitemap
 
 RUN npm run build
 

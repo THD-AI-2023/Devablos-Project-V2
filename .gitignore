@@ -134,3 +134,4 @@ dist
 *.pem
 */.env.production
 */.env.production
+client/public/sitemap.xml

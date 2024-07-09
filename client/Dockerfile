@@ -8,6 +8,8 @@ RUN npm install --production
 
 COPY . .
 
+RUN npm run generate-sitemap
+
 RUN npm run build
 
 RUN npm install -g serve

@@ -3,7 +3,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: hlexnc/devablos-project-v2-client
+    image: arudaev/devablos-project-v2-client
     platform: linux/amd64
     ports:
       - "3000:3000"
@@ -19,7 +19,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    image: hlexnc/devablos-project-v2-server
+    image: arudaev/devablos-project-v2-server
     platform: linux/amd64
     ports:
       - "5000:5000"

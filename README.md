@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/banner.png" alt="Devablos – a hand-drawn banner: five people around a table with laptops and a chat window above them" width="100%">
+</p>
+
 # Devablos Project V2
 
 Welcome to the Devablos Project V2, a full-stack chatbot application leveraging React for the frontend and Node.js with Express for the backend. This project integrates WebSocket for real-time interactions and uses OpenAI's API for advanced functionalities.
